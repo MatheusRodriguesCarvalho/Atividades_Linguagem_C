@@ -18,7 +18,7 @@ int main()
 
     x = calc_volume_esfera(x);
 
-    printf("O Volume dessa esfera eh %0.2f qualquer coisa ³", x);
+    printf("O Volume dessa esfera eh %0.2f qualquer coisa Â³", x);
 
     return 0;
 }
