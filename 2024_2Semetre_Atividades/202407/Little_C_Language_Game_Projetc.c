@@ -214,7 +214,7 @@ void evento_batalha () //Consiste no sistema de batalha do jogo
                 else { printf("Errou.\n"); }
                 break;
             case '3':
-                printf("\nDescansou o suficiente para restaurar suas força");
+                printf("\nDescansou o suficiente para restaurar suas forÃ§a");
                 if (p_life[0] >= p_life[1])
                 {
                     printf("\n\nNao pode exceder o limite de Vitalidade\n");
