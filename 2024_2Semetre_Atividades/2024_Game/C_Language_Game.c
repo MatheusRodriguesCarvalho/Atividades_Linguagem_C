@@ -8,7 +8,7 @@ It's was made outside the repository at this stage, by me, who didn't know about
 #include <time.h>
 #include <ctype.h>
 #include <math.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 
 //Informacoes do MAPA
@@ -501,9 +501,7 @@ int main (void) //O JOGO
         {
             tela_limpar ();
             printf("\nVoce finalmente encontrou o Santo Graal nas profundezas do calabouco ... \n\n");
-            printf("        P         \n   ___________    \n  '._==_==_=_.'   \n  .-\:      /-.   \n");
-            printf(" | (|:. 1   |) |  \n  '-|:.     |-'   \n    \::.    /     \n     '::. .'      \n");
-            printf("       ) (        \n     _.' '._      \n     -=---=-      \n                  \n");
+            printf("        P         \n   ___________    \n  '._==_==_=_.'   \n  .-\:      /-.   \n | (|:. 1   |) |  \n  '-|:.     |-'   \n    \::.    /     \n     '::. .'      \n       ) (        \n     _.' '._      \n     -=---=-      \n                  \n");
             break;
         }
     }
