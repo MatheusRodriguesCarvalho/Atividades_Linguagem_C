@@ -2,22 +2,22 @@
 #include <stdlib.h>
 #include <math.h>
 
-float HIPOTENUSA(float alt, float bas)
+void HIPOTENUSA(float bas, float alt, float *hip)
 {
     float hipotenusa;
-    hipotenusa = sqrt( alt * alt + bas * bas );
-    return hipotenusa;
+    *hip = sqrt( alt * alt + bas * bas );
 }
 
 int main()
 {
-    float altura, base;
+    float altura, base, hipot;
     printf("Qual eh a altura do triangulo: ");
     scanf("%f", &altura);
     printf("Quanto eh a base do triangulo: ");
     scanf("%f", &base);
 
-    printf("O Valor da Hipotenusa eh de %.2f", HIPOTENUSA(altura, base ));
+    HIPOTENUSA(altura, base, &hipot);
+    printf("O Valor da Hipotenusa eh de %.2f", hipot);
 
     return 0;
 }

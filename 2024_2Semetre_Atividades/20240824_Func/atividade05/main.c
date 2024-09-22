@@ -3,18 +3,18 @@
 
 int identificarQuadrante(float x, float y)
 {
-    int quadrante;
+    int quadrante =0;
 
-    if (x >= 0)
+    if (x > 0)
     {
-        if (y >= 0)
+        if (y > 0)
         { quadrante = 1; }
         else
         { quadrante = 4; }
     }
     else
     {
-        if (y >= 0)
+        if (y > 0)
         { quadrante = 2; }
         else
         { quadrante = 3; }

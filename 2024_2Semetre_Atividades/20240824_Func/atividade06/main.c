@@ -4,20 +4,19 @@
 float Reajuste_Salarial(float salario, float percentual)
 {
     float salarioAjustado;
-    percentual = percentual / 100;
-    salarioAjustado = salario * (1 + percentual);
+    salarioAjustado = salario * (1 + (percentual / 100));
     return salarioAjustado;
 }
 
 int main()
 {
     float salario, ajuste;
-    printf("Qual o salario que sera ajustado: R$");
+    printf("Qual o salario que sera ajustado: R");
     scanf("%f", &salario);
     printf("E o percentual do ajuste (em Porcentagem): ");
     scanf("%f",&ajuste);
 
-    printf("O salario ajustado eh de R$ %.2f", Reajuste_Salarial(salario, ajuste) );
+    printf("O salario ajustado eh de R %.2f", Reajuste_Salarial(salario, ajuste) );
 
     return 0;
 }
