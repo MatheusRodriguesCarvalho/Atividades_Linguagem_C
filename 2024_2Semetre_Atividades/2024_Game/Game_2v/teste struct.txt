@@ -1,0 +1,36 @@
+
+struct jogador
+{
+    int posicao[2]; //Posicao
+    int vida[2];
+    int forca;
+    int abate;
+    char comando;
+};
+
+struct inimigo
+{
+    int posicao[2];
+    int posicaoFutura[2];
+    int vida;
+    int vidaMaxima;
+    double fatorPerseguicao;
+    int existencia;
+} matheus;
+
+
+
+int main(void)
+{
+    struct jogador matheus = { 1, 2, 3, 4, 5, 6, 'B' };
+    //matheus.vida[1] = 3;
+    printf("valor em: %d\n", matheus.posicao[0]);
+    printf("valor em: %d\n", matheus.posicao[1]);
+    printf("valor em: %d\n", matheus.vida[0]);
+    printf("valor em: %d\n", matheus.vida[1]);
+    printf("valor em: %d\n", matheus.forca);
+    printf("valor em: %d\n", matheus.abate);
+    printf("valor em: %c\n", matheus.comando);
+    printf("valor em: %c\n", 250);
+    return 0;
+}
