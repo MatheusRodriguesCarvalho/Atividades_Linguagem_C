@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include<windows.h>
+#include <windows.h>
 
 
 void tela_limpar () //Limpa a tela
@@ -52,3 +52,29 @@ void menu ()
     printf("          x - Sair \n\n");
     printf("Selecione sua opcao: ");
 }
+
+void mapa_desenhar(char *mapa, int mapa_linha, int mapa_coluna)
+{
+    for(int y = 0; y < mapa_linha; y++)
+    {
+        for(int x = 0; x < mapa_coluna; x++)
+        {
+            printf("%c", *mapa);
+            mapa++;
+        }
+        printf("\n");
+    }
+    tela_pausar();
+}
+
+
+void jogador_movimentacao (char *escolha)
+{
+    tela_limpar();
+    printf("\n\nExecute uma das acoes baixo\n");
+    printf("manga\n");
+    printf("manga\n");
+    fflush(stdin);
+    *escolha = getchar();
+}
+
