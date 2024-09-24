@@ -1,6 +1,6 @@
 /*
 TO EDIT LATER!!
-It's was made outside the repository at this stage, by me, who didn't know about some nice pratice
+It was made outside the repository at this stage, by me, who didn't know about some nice pratice
 */
 
 #include <stdio.h>
