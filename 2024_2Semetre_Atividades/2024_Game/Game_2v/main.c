@@ -13,7 +13,7 @@ void game_loop ()
 {
 
     char jogo;
-    while(jogo != 'x')
+    while(jogo != 'x') //DO{}WHILE()
     {
         menu();
         fflush(stdin);
@@ -49,6 +49,12 @@ void game_jogar()
 {
     printf("Jogando");
     texto_introducao();
+
+    struct iJogador{
+        int vidaCorrente;
+        int vidaMaxima;
+        int forca;
+    }
 }
 
 void game_tutorial()
