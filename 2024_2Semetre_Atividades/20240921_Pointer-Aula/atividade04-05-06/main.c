@@ -31,6 +31,6 @@ Ira "pegar" o VALOR que o ponteiro aponta, incrementando uma Unidade no endereco
 /*
 05 - o que dizer de *(p + 10) ?
 
-o ponteiro ira apontar para uma valor em um endereco de memoria que esteja a 10 "passos" a "frente"
+o ponteiro ira apontar para uma valor em um endereco de memoria que esteja a 10 "passos" (posicoes de memoria do respectivo tipo) a "frente"
 em relacao ao endereco de memoria que estiver atribuido na variavel p.
 */
