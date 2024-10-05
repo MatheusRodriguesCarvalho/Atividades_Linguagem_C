@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1728137811 source:c:\users\mathe\documents\repositorios\atividades_linguagem_c\2024_2semetre_atividades\20241005_arquivos\exercicio_01\main.c
+	<stdio.h>
+	<stdlib.h>
+
