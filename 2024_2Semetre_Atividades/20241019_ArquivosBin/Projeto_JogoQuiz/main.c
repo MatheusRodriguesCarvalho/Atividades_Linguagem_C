@@ -30,7 +30,7 @@ void menu()
         printf("\n3. Como Jogar");
         printf("\n4. Sair");
 
-        printf("\nDigite a Op√ß√£o: ");
+        printf("\nDigite a OpÁ„o: ");
         scanf("%i", &opcao);
 
         switch (opcao)
@@ -47,7 +47,7 @@ void menu()
         case 4:
             break;
         default:
-            printf("Comando Inv√°lido. Digite novamente");
+            printf("Comando Inv·lido. Digite novamente");
         }
         fflush(stdin);
         getchar();
@@ -145,7 +145,7 @@ void Configurar()
         printf("\nA - Configurar as Perguntas.");
         printf("\nB - Voltar ao Menu principal.");
 
-        printf("\nDigite a Op√ß√£o: ");
+        printf("\nDigite a OpÁ„o: ");
         fflush(stdin);
         scanf("%c", &opcao);
 
@@ -160,7 +160,7 @@ void Configurar()
         case 'b':
             break;
         default:
-            printf("\nComando Inv√°lido. Digite novamente");
+            printf("\nComando Inv·lido. Digite novamente");
         }
         fflush(stdin);
         getchar();
