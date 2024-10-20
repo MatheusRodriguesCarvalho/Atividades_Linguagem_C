@@ -56,20 +56,20 @@ void menu()
 
 void SalvarPergunta(tpPergunta pergunta)
 {
-
     FILE * arq;
-    arq = fopen("banco de dados.qz", "ab");
 
-    if (arq == "NULL")
+    arq = fopen("banco_de_dados.qz", "ab");
+
+    if (arq == NULL)
     {
-        printf("Nao deu, chefe. ve ai");
+        printf("\nNão foi possível abrir o arquivo.");
     }
     else
     {
-        fwrite(&pergunta, sizeof(pergunta), 1, arq);
+        fwrite(&pergunta, sizeof(tpPergunta), 1, arq);
         fclose(arq);
     }
-
+    printf("\n arquivo.");
     //leitura por bytes
 }
 
