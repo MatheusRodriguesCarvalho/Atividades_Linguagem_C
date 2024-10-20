@@ -73,7 +73,6 @@ void SalvarPergunta(tpPergunta pergunta)
     //leitura por bytes
 }
 
-
 void LimparPergunta(tpPergunta *Caixa)
 {
 
