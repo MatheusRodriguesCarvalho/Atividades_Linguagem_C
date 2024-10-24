@@ -30,9 +30,10 @@ void GerarArquivo(tpEmbacacao *teste)
     if ( arq == NULL)
     {
         printf("Arquivo nao criado / salvo");
-    } else
+    }
+    else
     {
-        fwrite(&teste, sizeof(tpEmbacacao), 1, arq);
+        fwrite(teste, sizeof(tpEmbacacao), 1, arq);
         fclose(arq);
     }
 
