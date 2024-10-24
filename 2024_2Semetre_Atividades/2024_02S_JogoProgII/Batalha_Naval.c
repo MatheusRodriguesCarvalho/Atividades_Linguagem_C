@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
+#include <ctype.h>
 
 /*
 
@@ -20,23 +21,53 @@ funcaoQuePermitePersonalizarAQuantidade()
 
 typedef struct {int x; int y; int tamanho; char orientacao; } tpEmbacacao;
 
-void GerarArquivo()
+void GerarArquivo(tpEmbacacao *teste)
 {
-    //a
+    FILE * arq;
+
+    arq = fopen("barcos_jogador.emb", "a");
+
+    if ( arq == NULL)
+    {
+        printf("Arquivo nao criado / salvo");
+    } else
+    {
+        fwrite(&teste, sizeof(tpEmbacacao), 1, arq);
+        fclose(arq);
+    }
+
+
 }
 
-void GerarEmbarcacoes(int QuantidadeBarcos, char *Jogador, char *Inimigo)
+void GerarEmbarcacoes(int QuantidadeBarcos, char *Jogador, char *Inimigo, int tamanho)
 {
-
-
-
-
     tpEmbacacao BarcosJogador[QuantidadeBarcos];
     tpEmbacacao BarcosInimigo[QuantidadeBarcos];
 
+    for(int i = 0; i < QuantidadeBarcos; i++)
+    {
 
+        int x = 1;
+        x = (i + 1) % 3;
 
-    GerarArquivo(&BarcosJogador, &BarcosInimigo);
+        switch(x)
+        {
+        case 1:
+            printf("\nembarcacao pequena");
+            BarcosJogador[i].tamanho = 1;
+            break;
+        case 2:
+            printf("\nembarcacao media");
+            BarcosJogador[i].tamanho = 3;
+            break;
+        case 0:
+            printf("\nembarcacao grande");
+            BarcosJogador[i].tamanho = 5;
+            break;
+        }
+    }
+
+    GerarArquivo(BarcosJogador);
 }
 
 void GerarMapa(char metodo, char dificuldade)
@@ -49,18 +80,18 @@ void GerarMapa(char metodo, char dificuldade)
         QuantidadeBarcos = 3;
         break;
     case 'B':
-        tamanho = 7;
-        QuantidadeBarcos = 3;
+        tamanho = 11;
+        QuantidadeBarcos = 5;
         break;
     case 'C':
-        tamanho = 7;
-        QuantidadeBarcos = 3;
+        tamanho = 15;
+        QuantidadeBarcos = 8;
         break;
     }
     char MapaJogador[tamanho][tamanho];
     char MapaInimigo[tamanho][tamanho];
 
-    GerarEmbarcacoes(QuantidadeBarcos, MapaJogador, MapaInimigo);
+    GerarEmbarcacoes(QuantidadeBarcos, MapaJogador, MapaInimigo, tamanho);
 
 }
 
@@ -73,7 +104,7 @@ void Configurar()
         printf("\nDeseja Aloacar Manualmente (M) ou Automaticamente (A)?");
         fflush(stdin);
         scanf("%c", &alocacao);
-        alocacao = Toupper(alocacao);
+        alocacao = toupper(alocacao);
         system("cls");
         //condicional
     }while (alocacao != 'M' && alocacao != 'A');
@@ -85,7 +116,7 @@ void Configurar()
         printf("\nEscolha a Difiuldade:");
         fflush(stdin);
         scanf("%C", &dificuldade);
-        dificuldade = Toupper(dificuldade);
+        dificuldade = toupper(dificuldade);
         system("cls");
         //condicional
     }while (dificuldade != 'A' && dificuldade != 'B' && dificuldade != 'C');
