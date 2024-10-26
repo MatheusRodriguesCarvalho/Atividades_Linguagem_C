@@ -25,7 +25,7 @@ void GerarArquivo(tpEmbacacao *teste)
 {
     FILE * arq;
 
-    arq = fopen("barcos_jogador.emb", "a");
+    arq = fopen("barcos_jogador.emb", "wr");
 
     if ( arq == NULL)
     {
