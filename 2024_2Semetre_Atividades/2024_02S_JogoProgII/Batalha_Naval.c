@@ -25,7 +25,7 @@ void GerarArquivo(tpEmbacacao *teste)
 {
     FILE * arq;
 
-    arq = fopen("barcos_jogador.emb", "wr");
+    arq = fopen("Mapa_embarcacoes.emb", "wr");
 
     if ( arq == NULL)
     {
@@ -125,6 +125,50 @@ void Configurar()
     GerarMapa(alocacao, dificuldade);
 
 }
+
+LerArquivo()
+{
+    
+}
+
+void ImportarMapa(char *mapa, int tamanho)
+{
+    FILE *arq;
+    arq = fopen("Mapa_embarcacoes.emb", "rb");
+
+    if(arq == NULL)
+    {
+        printf("\nArquivo do mapa nao foi importado");
+    }
+    else
+    {
+        LerArquivo();
+        fclose(arq);
+    }
+}
+
+Jogar()
+{
+    
+    int tamanho = 7;
+    mapa[tamanho][tamanho];
+
+    ImportarMapa(mapa, tamanho);
+
+    /*
+    TO DO
+    game loop onde:
+        mostra o mapa do inimigo (uma 1a vez)
+        pergunta ao jogador onde ele quer escolher
+        torna a mostrar o mapa do inimigo, onde foi atirado
+        
+        //turno do inimigo
+        mostra onde ele mirou e o seu mapa
+            criar "logica" ou criterios para o inimigo
+    */
+    
+}
+
 void Menu()
 {
     int opcao = 0;
@@ -147,7 +191,7 @@ void Menu()
             Configurar();
             break;
         case 2:
-            //funcao
+            Jogar();
             break;
         case 3:
             //funcao
