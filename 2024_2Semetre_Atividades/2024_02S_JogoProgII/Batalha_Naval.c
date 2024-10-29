@@ -4,7 +4,17 @@
 #include <string.h>
 #include <ctype.h>
 
+#define TILE_OCEAN + //problema
+#define TILE_BARCO .
+
+
 /*
+
+BATALHA NAVAL...
+
+
+CAMPO MINADO??
+
 
 IFORMAÇÃO DOS BARCOS
 
@@ -21,11 +31,45 @@ funcaoQuePermitePersonalizarAQuantidade()
 
 typedef struct {int x; int y; int tamanho; char orientacao; } tpEmbacacao;
 
-void GerarArquivo(tpEmbacacao *teste)
+void GerarArquivoMapa(char *mapa)
+{
+
+}
+
+void DesenharMapa(char *MapaJogador, int Dimensao)
+{
+    for(int i = 0; i < Dimensao; i++)
+    {
+        for(int j = 0; j < Dimensao; j++)
+        {
+            printf("%c", *(MapaJogador++));
+        }
+    }
+}
+//--------------------------------------------------------------------------------------------------
+void PosicionarEmbarcaoes(char *MapaJogador, tpEmbacacao *Barcos, int QuantidadeBarcos, int Dimensao)
+{
+    //logica para alocar os barcos nos locais adequados, corrigindo erros e mostrando na tela o mapa
+
+    for(int i = 0; i < Dimensao; i++) //Define todas as regioes do mapa como Oceano
+    {
+        for(int j = 0; j < Dimensao; j++)
+        {
+            *(MapaJogador + i * Dimensao + j) = '.';
+        }
+    }
+
+    for (int i = 0; i < QuantidadeBarcos; i++)
+    {
+        DesenharMapa(MapaJogador, Dimensao);
+    }
+}
+//--------------------------------------------------------------------------------------------------
+void GerarArquivoBarcos(tpEmbacacao *barcos)
 {
     FILE * arq;
 
-    arq = fopen("Mapa_embarcacoes.emb", "wr");
+    arq = fopen("za_Listagem_embarcacoes.emb", "wr");
 
     if ( arq == NULL)
     {
@@ -33,25 +77,19 @@ void GerarArquivo(tpEmbacacao *teste)
     }
     else
     {
-        fwrite(teste, sizeof(tpEmbacacao), 1, arq);
+        fwrite(barcos, sizeof(tpEmbacacao), 1, arq);
         fclose(arq);
     }
-
-
 }
-
-void GerarEmbarcacoes(int QuantidadeBarcos, char *Jogador, char *Inimigo, int tamanho)
+//--------------------------------------------------------------------------------------------------
+void GerarEmbarcacoes(int QuantidadeBarcos, char *MapaJogador, int Dimensao)
 {
     tpEmbacacao BarcosJogador[QuantidadeBarcos];
-    tpEmbacacao BarcosInimigo[QuantidadeBarcos];
 
     for(int i = 0; i < QuantidadeBarcos; i++)
     {
-
-        int x = 1;
-        x = (i + 1) % 3;
-
-        switch(x)
+        int x = (i + 1) % 3;
+        switch(x) // separando os tipos de barcos que haverao no jogo
         {
         case 1:
             printf("\nembarcacao pequena");
@@ -67,68 +105,63 @@ void GerarEmbarcacoes(int QuantidadeBarcos, char *Jogador, char *Inimigo, int ta
             break;
         }
     }
-
-    GerarArquivo(BarcosJogador);
+    GerarArquivoBarcos(BarcosJogador);
+    PosicionarEmbarcaoes(MapaJogador, BarcosJogador, QuantidadeBarcos, Dimensao);
 }
-
-void GerarMapa(char metodo, char dificuldade)
+//--------------------------------------------------------------------------------------------------
+void GerarMapa(char dificuldade)
 {
-    int tamanho = 0, QuantidadeBarcos  = 0;
+    int Dimensao = 0, QuantidadeBarcos = 0;
+
     switch (dificuldade)
     {
     case 'A':
-        tamanho = 7;
+        Dimensao = 7;
         QuantidadeBarcos = 3;
         break;
     case 'B':
-        tamanho = 11;
+        Dimensao = 11;
         QuantidadeBarcos = 5;
         break;
     case 'C':
-        tamanho = 15;
+        Dimensao = 15;
         QuantidadeBarcos = 8;
         break;
     }
-    char MapaJogador[tamanho][tamanho];
-    char MapaInimigo[tamanho][tamanho];
 
-    GerarEmbarcacoes(QuantidadeBarcos, MapaJogador, MapaInimigo, tamanho);
+    char MapaJogador[Dimensao][Dimensao];
+
+    GerarEmbarcacoes(QuantidadeBarcos, MapaJogador, Dimensao);
+    GerarArquivoMapa(MapaJogador);
 
 }
-
+//--------------------------------------------------------------------------------------------------
 void Configurar()
 {
-    char alocacao, dificuldade;
+    char dificuldade;
 
     printf("\nRealocando as posisoes dos Navios...");
-    do{
-        printf("\nDeseja Aloacar Manualmente (M) ou Automaticamente (A)?");
-        fflush(stdin);
-        scanf("%c", &alocacao);
-        alocacao = toupper(alocacao);
-        system("cls");
-        //condicional
-    }while (alocacao != 'M' && alocacao != 'A');
     do{
         printf("\nA - Facil (7x7, 3 Barcos)");
         printf("\nB - Medio (11x11, 5 Barcos)");
         printf("\nC - Dificil (15x15, 8 Barcos)");
-        printf("\nZ - Detalhamento...");
         printf("\nEscolha a Difiuldade:");
         fflush(stdin);
-        scanf("%C", &dificuldade);
+        scanf("%c", &dificuldade);
         dificuldade = toupper(dificuldade);
         system("cls");
         //condicional
     }while (dificuldade != 'A' && dificuldade != 'B' && dificuldade != 'C');
 
-    GerarMapa(alocacao, dificuldade);
+    GerarMapa(dificuldade);
 
 }
 
-LerArquivo()
+
+
+void LerArquivo()
 {
-    
+
 }
 
 void ImportarMapa(char *mapa, int tamanho)
@@ -147,13 +180,13 @@ void ImportarMapa(char *mapa, int tamanho)
     }
 }
 
-Jogar()
+void Jogar()
 {
-    
-    int tamanho = 7;
-    mapa[tamanho][tamanho];
 
-    ImportarMapa(mapa, tamanho);
+    int tamanho = 7;
+    char mapa[tamanho][tamanho];
+
+    //ImportarMapa(mapa, tamanho);
 
     /*
     TO DO
@@ -161,13 +194,19 @@ Jogar()
         mostra o mapa do inimigo (uma 1a vez)
         pergunta ao jogador onde ele quer escolher
         torna a mostrar o mapa do inimigo, onde foi atirado
-        
+
         //turno do inimigo
         mostra onde ele mirou e o seu mapa
             criar "logica" ou criterios para o inimigo
     */
-    
+
+
+
+
 }
+
+
+
 
 void Menu()
 {
