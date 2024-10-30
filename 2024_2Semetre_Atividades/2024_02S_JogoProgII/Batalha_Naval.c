@@ -4,9 +4,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#define TILE_OCEAN + //problema
-#define TILE_BARCO .
-
+#define oceano #
+#define barco +
 
 /*
 
