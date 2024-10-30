@@ -61,6 +61,7 @@ void PosicionarEmbarcaoes(char *MapaJogador, tpEmbacacao *Barcos, int Quantidade
     for (int i = 0; i < QuantidadeBarcos; i++)
     {
         DesenharMapa(MapaJogador, Dimensao);
+        // depois vai pegar e ler o arquivo, e pegar as das informacoes de uma embarcacao
     }
 }
 //--------------------------------------------------------------------------------------------------
