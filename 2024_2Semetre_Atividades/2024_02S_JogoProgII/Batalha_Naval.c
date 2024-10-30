@@ -4,8 +4,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#define oceano #
-#define barco +
+//#define oceano '#'
+//#define barco '*'
 
 /*
 
@@ -14,6 +14,11 @@ BATALHA NAVAL...
 
 CAMPO MINADO??
 
+(jogo de advinhacao, onde ha uma pessoa com caracteristicas predefinidas [olhos, cabelos, roupa...]
+ e voce deve advinhar todas as caracteristicas
+
+ estilo purple place
+ )
 
 IFORMAÇÃO DOS BARCOS
 
@@ -37,43 +42,68 @@ void GerarArquivoMapa(char *mapa)
 
 void DesenharMapa(char *MapaJogador, int Dimensao)
 {
+    printf("\n");
     for(int i = 0; i < Dimensao; i++)
     {
         for(int j = 0; j < Dimensao; j++)
         {
             printf("%c", *(MapaJogador++));
         }
+        printf("\n");
     }
 }
 //--------------------------------------------------------------------------------------------------
 void PosicionarEmbarcaoes(char *MapaJogador, tpEmbacacao *Barcos, int QuantidadeBarcos, int Dimensao)
 {
     //logica para alocar os barcos nos locais adequados, corrigindo erros e mostrando na tela o mapa
+    int cont = QuantidadeBarcos;
+    int x = 0, y = 0;
 
-    for(int i = 0; i < Dimensao; i++) //Define todas as regioes do mapa como Oceano
+    for(int linha = 0; linha < Dimensao; linha++) //Define todas as regioes do mapa como Oceano
     {
-        for(int j = 0; j < Dimensao; j++)
+        for(int coluna = 0; coluna < Dimensao; coluna++)
         {
-            *(MapaJogador + i * Dimensao + j) = '.';
+            *(MapaJogador + linha * Dimensao + coluna) = '#';
         }
     }
 
-    for (int i = 0; i < QuantidadeBarcos; i++)
+    while(cont > 0)//enquanto todos os barcos nao forem posicionados adequadamente, noao sai do loop
     {
+
         DesenharMapa(MapaJogador, Dimensao);
         // depois vai pegar e ler o arquivo, e pegar as das informacoes de uma embarcacao
+        do{
+            printf("\nDigite a coordenada da Linha (1 -> %i): ", Dimensao);
+            scanf("%i", &y);
+            printf("\nDigite a coordenada da Coluna (1 -> %i): ", Dimensao);
+            scanf("%i", &x);
+            system("cls");
+            if(x > Dimensao || y > Dimensao)
+            {
+                printf("Valor invalido. Digite novamente!\n");
+            }
+        }while(x > Dimensao || y > Dimensao);
+
+
+
+        *(MapaJogador + (y-1) * Dimensao + (x-1)) = 'O';
+        //posicao real relativa a percepsao do jogador, "linha 1" para ele, eh a linha 0 pode coiso aqui
+
+        cont--;
+
     }
+
 }
 //--------------------------------------------------------------------------------------------------
 void GerarArquivoBarcos(tpEmbacacao *barcos)
 {
     FILE * arq;
 
-    arq = fopen("za_Listagem_embarcacoes.emb", "wr");
+    arq = fopen("\nza_Listagem_embarcacoes.emb", "wr");
 
     if ( arq == NULL)
     {
-        printf("Arquivo nao criado / salvo");
+        printf("\nArquivo nao criado / salvo");
     }
     else
     {
@@ -105,7 +135,7 @@ void GerarEmbarcacoes(int QuantidadeBarcos, char *MapaJogador, int Dimensao)
             break;
         }
     }
-    GerarArquivoBarcos(BarcosJogador);
+    //GerarArquivoBarcos(BarcosJogador);
     PosicionarEmbarcaoes(MapaJogador, BarcosJogador, QuantidadeBarcos, Dimensao);
 }
 //--------------------------------------------------------------------------------------------------
@@ -204,8 +234,6 @@ void Jogar()
 
 
 }
-
-
 
 
 void Menu()
