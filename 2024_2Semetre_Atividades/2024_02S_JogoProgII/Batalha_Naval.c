@@ -72,6 +72,7 @@ void PosicionarEmbarcaoes(char *MapaJogador, tpEmbacacao *Barcos, int Quantidade
 
         DesenharMapa(MapaJogador, Dimensao);
         // depois vai pegar e ler o arquivo, e pegar as das informacoes de uma embarcacao
+        reposicionar:
         do{
             printf("\nDigite a coordenada da Linha (1 -> %i): ", Dimensao);
             scanf("%i", &y);
@@ -83,7 +84,8 @@ void PosicionarEmbarcaoes(char *MapaJogador, tpEmbacacao *Barcos, int Quantidade
                 printf("Valor invalido. Digite novamente!\n");
             }
         }while(x > Dimensao || y > Dimensao);
-
+        
+        //Orientacao (vertical / horizontal)
 
 
         *(MapaJogador + (y-1) * Dimensao + (x-1)) = 'O';
@@ -116,21 +118,22 @@ void GerarEmbarcacoes(int QuantidadeBarcos, char *MapaJogador, int Dimensao)
 {
     tpEmbacacao BarcosJogador[QuantidadeBarcos];
 
+    printf("\nListagem dos Navios:");
     for(int i = 0; i < QuantidadeBarcos; i++)
     {
         int x = (i + 1) % 3;
         switch(x) // separando os tipos de barcos que haverao no jogo
         {
         case 1:
-            printf("\nembarcacao pequena");
+            printf("\n Embarcacao pequena (1x1)");
             BarcosJogador[i].tamanho = 1;
             break;
         case 2:
-            printf("\nembarcacao media");
+            printf("\n Embarcacao media (1x3)");
             BarcosJogador[i].tamanho = 3;
             break;
         case 0:
-            printf("\nembarcacao grande");
+            printf("\n Embarcacao grande (1x5)");
             BarcosJogador[i].tamanho = 5;
             break;
         }
