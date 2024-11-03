@@ -237,7 +237,7 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
     {
         system("cls");
         Desenhar_Campo(Campo, tamanho);
-        printf("\nHa %i espacos livres.", celulasRestantes);
+        printf("\nHa %i espacos sem Bombas.", celulasRestantes);
         printf("\nDigite a linha:");
         fflush(stdin);
         scanf("%i", &lin);
@@ -246,7 +246,15 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
         scanf("%i", &col);
         fflush(stdin);
 
-        if( Validacao_Coordadeda(lin, col, tamanho) )
+        //Verificar
+        if (celulasRestantes <= 20)
+        {
+            printf("\nVoce finalizou o Jogo.\n");
+            printf("\nO Campo foi limpo sem nenhuma bomba ter sido acertada.\n");
+            Gravar_Nome(&Jogador);
+            Gerar_Relarotio(Campo, celulasRestantes, &Jogador);
+        }
+        else if( Validacao_Coordadeda(lin, col, tamanho) )
         {
             Jogador.JogadasRealizadas++;
             if( (Campo + col + lin * tamanho)->Bomba)
