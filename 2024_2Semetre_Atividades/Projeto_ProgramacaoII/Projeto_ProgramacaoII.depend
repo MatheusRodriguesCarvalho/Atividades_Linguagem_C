@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1730640472 source:c:\users\mathe\documents\repositorios\atividades_linguagem_c\2024_2semetre_atividades\projeto_programacaoii\main.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<string.h>
+

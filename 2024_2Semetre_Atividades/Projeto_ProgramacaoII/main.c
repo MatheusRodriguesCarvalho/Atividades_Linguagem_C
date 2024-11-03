@@ -28,24 +28,20 @@ void desenharCampo(tpCelula *Campo, int tamanho)
     {
         for(int coluna = 0; coluna < tamanho; coluna++)
         {
-            if ((Campo + coluna + linha * tamanho)->estaAberta == 0)
-            {
-                printf("%i", Campo->vizinhos);
-            }
-            else if ((Campo + coluna + linha * tamanho)->eBomba == 1)
+            if ((Campo + coluna + linha * tamanho)->eBomba == 1)
             {
                 printf("*");
             }
             else
             {
-                printf("%c", 254);
+                printf("%i", (Campo + coluna + linha * tamanho)->vizinhos);
+                //printf("%c", 254);
             }
 
         }
         printf("\n");
     }
 }
-
 
 
 
@@ -71,11 +67,17 @@ int quantBombasVizinhas(tpCelula *Campo, int linha, int coluna, int tamanho){
 
 
 // funcao para contar as bombas vizinhas
-void contarBombas(tpCelula *Campo, int tamanho){
-    for(int linha = 0; linha < tamanho; linha++){
+void contarBombas(tpCelula *Campo, int tamanho)
+{
+    printf("\n");
+    for(int linha = 0; linha < tamanho; linha++)
+    {
         for(int coluna = 0; coluna < tamanho; coluna++)
+        {
             (Campo + coluna + linha * tamanho)->vizinhos = quantBombasVizinhas(Campo, linha, coluna, tamanho);
             printf("(%i)", quantBombasVizinhas(Campo, linha, coluna, tamanho));
+        }
+        printf("\n");
     }
 }
 
