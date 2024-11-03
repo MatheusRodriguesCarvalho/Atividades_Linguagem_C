@@ -20,23 +20,34 @@ void gravarNomeJogador(char *nomeJogador)
 void desenharCampo(tpCelula *Campo, int tamanho)
 {
     //system("cls");
+    printf("-  ");
+    for(int i = 0; i<tamanho;i++)
+    {
+        if(i >= 10){ printf("%i",i); }
+        else{ printf("%i ",i); }
+    }
+    printf("\n");
+
     for(int linha = 0; linha < tamanho; linha++)
     {
+        if(linha>=10){printf("%i ",linha);}
+        else{printf("%i  ",linha);}
+
         for(int coluna = 0; coluna < tamanho; coluna++)
         {
             if ((Campo + coluna + linha * tamanho)->estaAberta == 0)
             {
-                printf("%c", 254);
+                printf("%c ", 254);
             }
             else
             {
                 if ((Campo + coluna + linha * tamanho)->eBomba == 1)
                 {
-                    printf("*");
+                    printf("* ");
                 }
                 else
                 {
-                    printf("%i", (Campo + coluna + linha * tamanho)->vizinhos);
+                    printf("%i ", (Campo + coluna + linha * tamanho)->vizinhos);
                 }
             }
         }
@@ -65,7 +76,6 @@ int quantBombasVizinhas(tpCelula *Campo, int linha, int coluna, int tamanho)
     return quantidade;
 }
 
-
 // funcao para contar as bombas vizinhas
 void contarBombas(tpCelula *Campo, int tamanho)
 {
@@ -75,9 +85,9 @@ void contarBombas(tpCelula *Campo, int tamanho)
         for(int coluna = 0; coluna < tamanho; coluna++)
         {
             (Campo + coluna + linha * tamanho)->vizinhos = quantBombasVizinhas(Campo, linha, coluna, tamanho);
-            printf("(%i)", quantBombasVizinhas(Campo, linha, coluna, tamanho));
+            //printf("(%i)", quantBombasVizinhas(Campo, linha, coluna, tamanho));
         }
-        getchar();
+        //getchar();
     }
 }
 
@@ -148,6 +158,53 @@ void configurarCampo(int * tamanho, int * quantidadeBombas)
 
 }
 
+void gameLoop(tpCelula *Campo, int tamanho)
+{
+    int lin, col;
+    int continuar = 1;
+    desenharCampo(Campo, tamanho);
+
+    while(continuar)
+    {
+        do{
+            printf("Digite a linha:");
+            fflush(stdin);
+            scanf("%i", &lin);
+            printf("Digite a Coluna:");
+            fflush(stdin);
+            scanf("%i", &col);
+            system("cls");
+        } while( coordenadaEhValida(lin, col, tamanho) );
+
+        fflush(stdin);
+        if( coordenadaEhValida(lin, col, tamanho) )
+        {
+            if( (Campo + col + lin * tamanho)->eBomba == 0)
+            {
+                (Campo + col + lin * tamanho)->estaAberta = 1;
+            }
+            else if( (Campo + col + lin * tamanho)->estaAberta = 1 )
+            {
+                printf("Coordenada ja foi escolhida! informe outra coordenada.");
+                getchar();
+                system("cls");
+            }
+            else
+            {
+                printf("Voce pisou em uma Bomba. Fim de Jogo");
+                continuar = 0;
+                getchar();
+            }
+        }
+        else
+        {
+            printf("Coordenada informada eh invalida!");
+            getchar();
+            //system("cls");
+        }
+    }
+}
+
 void jogar()
 {
     char nomeJogador[50];
@@ -161,10 +218,9 @@ void jogar()
     gravarNomeJogador(nomeJogador);
     inicializarJogo(Campo, tamanho);
     posicionarBombas(Campo, tamanho, quantidadeBombas);
-
     contarBombas(Campo, tamanho);
 
-    desenharCampo(Campo, tamanho);
+    gameLoop(Campo, tamanho);
 
 }
 
@@ -172,10 +228,10 @@ void jogar()
 void exibirInstrucoes()
 {
     printf("\nInstruções do Jogo:\n");
-    printf("1. O objetivo é abrir todas as células que não têm bombas.\n");
-    printf("2. Escolha uma célula digitando sua linha e coluna.\n");
-    printf("3. Se abrir uma célula com uma bomba, você perde o jogo.\n");
-    printf("4. Os números nas células indicam a quantidade de bombas nas células vizinhas.\n\n");
+    printf("Haverá um determinado Numero de Bombas espalhadas pelo Campo.\n");
+    printf("Seu objetivo eh Selecionar todas as calulas que nao possuirem bomba.\n");
+    printf("Voce precisara escolher uma coordenada de linha e coluna para abrir a celula.\n");
+    printf("Os numeros nas celulas abertas indicaram a quantidade de bombas nas celulas ao redor.\n\n");
 }
 
 void Menu()
@@ -189,9 +245,9 @@ void Menu()
         printf("\n BEM VINDO AO CAMPO MINADO \n");
         printf("\n---------------------------\n");
         printf("1. Iniciar Jogo\n");
-        printf("2. Instruções\n");
+        printf("2. Instrucoes\n");
         printf("3. Sair\n");
-        printf("Escolha uma opção: ");
+        printf("Escolha uma opcao: ");
         fflush(stdin);
         scanf("%d", &opcao);
 
