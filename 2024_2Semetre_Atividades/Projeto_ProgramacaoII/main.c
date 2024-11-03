@@ -3,18 +3,57 @@
 #include <time.h>
 #include <string.h>
 
+#define MAX_NOME 50
+
 typedef struct{ int eBomba; int estaAberta; int vizinhos; } tpCelula;
 
-void gravarNomeJogador(char *nomeJogador)
+typedef struct{ char nome[MAX_NOME]; int pontuacao; int jogadasRealizadas; }
+tpJogador;
+
+void gravarNomeJogador(tpJogador *Jogador)
 {
     printf("Digite o seu nome: ");
     fflush(stdin);
-    fgets(nomeJogador, 50, stdin);
-    nomeJogador[strcspn(nomeJogador, "\n")] = '\0'; // remove o caractere de nova linha
+    fgets(*Jogador->nome, MAX_NOME, stdin);
+    Jogador[strcspn(Jogador, "\n")] = '\0'; // remove o caractere de nova linha
 }
 
+void fimDeJogo(tpCelula *Campo, int tamanho, int lin, int col)
+{
+    system("cls");
+    mostrarBombas(Campo, tamanho);
+    desenharCampo(Campo, tamanho);
+    printf("\nHavia uma bomba na cordenada %ix%i\n", lin, col);
+    printf("E voce pisou nela. Fim de Jogo\n");
+}
 
+//Gerando o relatorio em aruivo txt
+void gerarRelarotio(int celulasRestantes, int jogadas, char *nomeJogador)
+{
+    int pontuacao = (200 - celulasRestantes) * jogadas;
 
+    //gerarArquivo
+    FILE *relatorio;
+    relatorio = fopen("teste.txt", "w");
+
+    if(relatorio == NULL)
+    {
+        printf("\nNao foi possivel Gerar o Relatorio!");
+    }
+    else
+    {
+        char texto[2*MAX_NOME] = "Nome do Jogador: ";
+        fputs(strcat(texto,nomeJogador), relatorio);
+        
+        fputc('\n', relatorio);
+
+        fputs("Jogadas Realizadas: ", relatorio);
+        fputs(jogadas, relatorio);
+
+        fclose(relatorio);
+    }
+
+}
 
 
 void desenharCampo(tpCelula *Campo, int tamanho)
@@ -53,6 +92,22 @@ void desenharCampo(tpCelula *Campo, int tamanho)
         }
         printf("\n");
     }
+}
+
+void mostrarBombas(tpCelula *Campo, int tamanho)
+{
+
+    for(int linha = 0; linha < tamanho; linha++)
+    {
+        for(int coluna = 0; coluna < tamanho; coluna++)
+        {
+            if( (Campo + coluna + linha * tamanho)->eBomba)
+            {
+                (Campo + coluna + linha * tamanho)->estaAberta = 1;
+            }
+        }
+    }
+
 }
 
 int coordenadaEhValida(int linha, int coluna, int tamanho)
@@ -158,11 +213,13 @@ void configurarCampo(int * tamanho, int * quantidadeBombas)
 
 }
 
-void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas)
+void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas, char *nomeJogador)
 {
     int lin, col;
     int continuar = 1;
+    //algumas estatisticas
     int celulasRestantes = tamanho * tamanho - quantidadeBombas;
+    int jogadasRealizadas = 0;
 
     while(continuar)
     {
@@ -181,9 +238,10 @@ void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas)
         {
             if( (Campo + col + lin * tamanho)->eBomba)
             {
-                system("cls");
-                printf("\nHavia uma bomba na cordenada %ix%i\n", lin, col);
-                printf("\nE voce pisou nela. Fim de Jogo\n");
+                fimDeJogo(Campo, tamanho, lin, col);
+
+                gerarRelarotio(celulasRestantes, jogadasRealizadas, nomeJogador);
+
                 continuar = 0;
                 getchar();
                 system("cls");
@@ -192,7 +250,8 @@ void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas)
             {
                 if( (Campo + col + lin * tamanho)->estaAberta)
                 {
-                    printf("\nCoordenada ja foi escolhida! informe outra coordenada.\n");
+                    printf("\nCoordenada ja foi escolhida!");
+                    printf("\nInforme outra coordenada.\n");
                     getchar();
                 }
                 else
@@ -212,7 +271,7 @@ void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas)
 
 void jogar()
 {
-    char nomeJogador[50];
+    tpJogador Jogador;
 
     int tamanho = 10;
     int quantidadeBombas = 0;
@@ -220,23 +279,25 @@ void jogar()
 
     tpCelula Campo[tamanho][tamanho];
 
-    gravarNomeJogador(nomeJogador);
+    gravarNomeJogador(&Jogador);
     inicializarJogo(Campo, tamanho);
     posicionarBombas(Campo, tamanho, quantidadeBombas);
     contarBombas(Campo, tamanho);
 
-    gameLoop(Campo, tamanho, quantidadeBombas);
+    gameLoop(Campo, tamanho, quantidadeBombas, &Jogador);
 
 }
 
 // Função para exibir as instruções do jogo
 void exibirInstrucoes()
 {
+    system("cls");
     printf("\nInstruções do Jogo:\n");
     printf("Haverá um determinado Numero de Bombas espalhadas pelo Campo.\n");
     printf("Seu objetivo eh Selecionar todas as calulas que nao possuirem bomba.\n");
     printf("Voce precisara escolher uma coordenada de linha e coluna para abrir a celula.\n");
     printf("Os numeros nas celulas abertas indicaram a quantidade de bombas nas celulas ao redor.\n\n");
+    getchar();
 }
 
 void Menu()
@@ -245,7 +306,7 @@ void Menu()
 
     while (opcao != 3)
     {
-
+        system("cls");
         printf("\n---------------------------\n");
         printf("\n BEM VINDO AO CAMPO MINADO \n");
         printf("\n---------------------------\n");
