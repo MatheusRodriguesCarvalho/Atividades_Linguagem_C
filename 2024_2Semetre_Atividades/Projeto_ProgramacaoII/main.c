@@ -255,7 +255,6 @@ void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas)
                 gerarRelarotio(celulasRestantes, &Jogador);
 
                 continuar = 0;
-                getchar();
                 system("cls");
             }
             else
