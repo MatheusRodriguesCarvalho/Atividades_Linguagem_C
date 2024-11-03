@@ -5,43 +5,43 @@
 
 #define MAX_NOME 50
 
-typedef struct{ int eBomba; int estaAberta; int vizinhos; } tpCelula;
+typedef struct{ int Bomba; int Aberto; int aoRedor; } tpCelula;
 
-typedef struct{ char nome[MAX_NOME]; int pontuacao; int jogadasRealizadas; }
+typedef struct{ char Nome[MAX_NOME]; int Pontuacao; int JogadasRealizadas; }
 tpJogador;
 
 
-void limparJogador(tpJogador *j)
+void Limpar_Jogador(tpJogador *j)
 {
 
     for (int i = 0; i < MAX_NOME; i++)
     {
-        j->nome[i] = '\0';
+        j->Nome[i] = '\0';
     }
-    j->jogadasRealizadas = 0;
-    j->pontuacao = 0;
+    j->JogadasRealizadas = 0;
+    j->Pontuacao = 0;
 }
 
-void gravarNomeJogador(tpJogador *Jogador)
+void Gravar_Nome(tpJogador *Jogador)
 {
     printf("Digite o seu nome: ");
     fflush(stdin);
-    fgets(Jogador->nome, MAX_NOME, stdin);
+    fgets(Jogador->Nome, MAX_NOME, stdin);
 }
 
-void fimDeJogo(tpCelula *Campo, int tamanho, int lin, int col)
+void Fim_Jogo(tpCelula *Campo, int tamanho, int lin, int col)
 {
     system("cls");
-    mostrarBombas(Campo, tamanho);
-    desenharCampo(Campo, tamanho);
+    Revela_Bombas(Campo, tamanho);
+    Desenhar_Campo(Campo, tamanho);
     printf("\nHavia uma bomba na cordenada %ix%i\n", lin, col);
     printf("E voce pisou nela. Fim de Jogo\n");
 }
 
-//Gerando o relatorio em aruivo txt
-void gerarRelarotio(int celulasRestantes, tpJogador *Jogador)
+//Gerando o relatorio em aruivo .rlt
+void Gerar_Relarotio(tpCelula *Campo, int celulasRestantes, tpJogador *Jogador)
 {
-    int pontuacao = (200 - celulasRestantes) * Jogador->jogadasRealizadas;
+    int pontuacao = (200 - celulasRestantes) * Jogador->JogadasRealizadas;
 
     FILE *relatorio;
     relatorio = fopen("Relatorio.rlt", "wb");
@@ -52,21 +52,22 @@ void gerarRelarotio(int celulasRestantes, tpJogador *Jogador)
     }
     else
     {
-        printf("ok");
         fprintf(relatorio, "\nJogador: ");
-        fwrite(Jogador->nome, MAX_NOME, 1, relatorio);
+        fwrite(Jogador->Nome, MAX_NOME, 1, relatorio);
         fprintf(relatorio, "\nJogadas Realizadas:  ");
-        fprintf(relatorio, "%i \n", Jogador->jogadasRealizadas);
+        fprintf(relatorio, "%i \n", Jogador->JogadasRealizadas);
         fprintf(relatorio, "\nPontuacao:  ");
         fprintf(relatorio, "%i \n", pontuacao);
-        printf("ok2");
+        fprintf(relatorio, "\nCampo: ");
+        fwrite(Campo, sizeof(tpCelula), 1, relatorio);
 
         fclose(relatorio);
     }
 
 }
 
-void desenharCampo(tpCelula *Campo, int tamanho)
+//Pega o Campo e desenha na tela
+void Desenhar_Campo(tpCelula *Campo, int tamanho)
 {
     //system("cls");
     printf("\n-  ");
@@ -84,19 +85,19 @@ void desenharCampo(tpCelula *Campo, int tamanho)
 
         for(int coluna = 0; coluna < tamanho; coluna++)
         {
-            if ((Campo + coluna + linha * tamanho)->estaAberta == 0)
+            if ((Campo + coluna + linha * tamanho)->Aberto == 0)
             {
                 printf("%c ", 254);
             }
             else
             {
-                if ((Campo + coluna + linha * tamanho)->eBomba == 1)
+                if ((Campo + coluna + linha * tamanho)->Bomba == 1)
                 {
                     printf("* ");
                 }
                 else
                 {
-                    printf("%i ", (Campo + coluna + linha * tamanho)->vizinhos);
+                    printf("%i ", (Campo + coluna + linha * tamanho)->aoRedor);
                 }
             }
         }
@@ -104,35 +105,36 @@ void desenharCampo(tpCelula *Campo, int tamanho)
     }
 }
 
-void mostrarBombas(tpCelula *Campo, int tamanho)
+//Quando perder, a posicao das bombas serao revelados
+void Revela_Bombas(tpCelula *Campo, int tamanho)
 {
-
     for(int linha = 0; linha < tamanho; linha++)
     {
         for(int coluna = 0; coluna < tamanho; coluna++)
         {
-            if( (Campo + coluna + linha * tamanho)->eBomba)
+            if( (Campo + coluna + linha * tamanho)->Bomba)
             {
-                (Campo + coluna + linha * tamanho)->estaAberta = 1;
+                (Campo + coluna + linha * tamanho)->Aberto = 1;
             }
         }
     }
-
 }
 
-int coordenadaEhValida(int linha, int coluna, int tamanho)
+//Valida as coordenadas em relacao ao tamanho estabelacido
+int Validacao_Coordadeda(int linha, int coluna, int tamanho)
 {
     return (linha >= 0 && linha < tamanho && coluna >= 0 && coluna < tamanho);
 }
 
-int quantBombasVizinhas(tpCelula *Campo, int linha, int coluna, int tamanho)
+//Calcula a quantidade de Bombas ao redor da Celula
+int Bombas_Proximas(tpCelula *Campo, int linha, int coluna, int tamanho)
 {
     int quantidade = 0;
     for(int i = -1; i <= 1; i++)
     {
         for(int j = -1; j <= 1; j++)
         {
-            if(coordenadaEhValida(linha + i, coluna + j, tamanho) && (Campo + (coluna + j) + (linha + i) * tamanho)->eBomba)
+            if(Validacao_Coordadeda(linha + i, coluna + j, tamanho) && (Campo + (coluna + j) + (linha + i) * tamanho)->Bomba)
             {
                 quantidade++;
             }
@@ -141,52 +143,51 @@ int quantBombasVizinhas(tpCelula *Campo, int linha, int coluna, int tamanho)
     return quantidade;
 }
 
-// funcao para contar as bombas vizinhas
-void contarBombas(tpCelula *Campo, int tamanho)
+//Atribui a quantidade de bombas ao redor de uma determinada celula, de todas as celulas
+void Contar_Bombas(tpCelula *Campo, int tamanho)
 {
-    printf("\n");
     for(int linha = 0; linha < tamanho; linha++)
     {
         for(int coluna = 0; coluna < tamanho; coluna++)
         {
-            (Campo + coluna + linha * tamanho)->vizinhos = quantBombasVizinhas(Campo, linha, coluna, tamanho);
-            //printf("(%i)", quantBombasVizinhas(Campo, linha, coluna, tamanho));
+            (Campo + coluna + linha * tamanho)->aoRedor = Bombas_Proximas(Campo, linha, coluna, tamanho);
         }
-        //getchar();
     }
 }
 
-void posicionarBombas(tpCelula *campo, int tamanho, int quantidadeBombas)
+//Posiciona as bombas em celulas aleatorias, se repitir uma posicao, ele retorna
+void Posicionar_Bombas(tpCelula *Campo, int tamanho, int quantidadeBombas)
 {
     srand(time(NULL));
     for(int i = 1; i <= quantidadeBombas; i++)
     {
         int linha = rand() % tamanho;
         int coluna = rand() % tamanho;
-        if((campo + coluna + linha * tamanho)->eBomba == 0)
+        if((Campo + coluna + linha * tamanho)->Bomba == 0)
         {
-            (campo + coluna + linha * tamanho)->eBomba = 1;
+            (Campo + coluna + linha * tamanho)->Bomba = 1;
         }
         else
             i--;
     }
 }
 
-// funcao para inicializar a matriz do jogo
-void inicializarJogo(tpCelula *campo, int tamanho)
+//Inicializa e Limpa cada Celula do Campo
+void Inicializar(tpCelula *Campo, int tamanho)
 {
     for(int linha = 0; linha < tamanho; linha++)
     {
         for(int coluna = 0; coluna < tamanho; coluna++)
         {
-            (campo + coluna + linha * tamanho)->eBomba = 0;
-            (campo + coluna + linha * tamanho)->estaAberta = 0;
-            (campo + coluna + linha * tamanho)->vizinhos= 0;
+            (Campo + coluna + linha * tamanho)->Bomba = 0;
+            (Campo + coluna + linha * tamanho)->Aberto = 0;
+            (Campo + coluna + linha * tamanho)->aoRedor= 0;
         }
     }
 }
 
-void configurarCampo(int * tamanho, int * quantidadeBombas)
+//Define a Dificuldade do Jogo
+void Configurar_Campo(int * tamanho, int * quantidadeBombas)
 {
     char dificuldade;
 
@@ -220,22 +221,22 @@ void configurarCampo(int * tamanho, int * quantidadeBombas)
         *quantidadeBombas = 40;
         break;
     }
-
 }
 
-void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas)
+//Repeticao do loop para jogar
+void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
 {
     int lin, col;
     int continuar = 1;
     //algumas estatisticas
     int celulasRestantes = tamanho * tamanho - quantidadeBombas;
     tpJogador Jogador;
-    limparJogador(&Jogador);
-    
+    Limpar_Jogador(&Jogador);
+
     while(continuar)
     {
         system("cls");
-        desenharCampo(Campo, tamanho);
+        Desenhar_Campo(Campo, tamanho);
         printf("\nHa %i espacos livres.", celulasRestantes);
         printf("\nDigite a linha:");
         fflush(stdin);
@@ -245,21 +246,21 @@ void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas)
         scanf("%i", &col);
         fflush(stdin);
 
-        if( coordenadaEhValida(lin, col, tamanho) )
+        if( Validacao_Coordadeda(lin, col, tamanho) )
         {
-            Jogador.jogadasRealizadas++;
-            if( (Campo + col + lin * tamanho)->eBomba)
+            Jogador.JogadasRealizadas++;
+            if( (Campo + col + lin * tamanho)->Bomba)
             {
-                fimDeJogo(Campo, tamanho, lin, col);
-                gravarNomeJogador(&Jogador);
-                gerarRelarotio(celulasRestantes, &Jogador);
+                Fim_Jogo(Campo, tamanho, lin, col);
+                Gravar_Nome(&Jogador);
+                Gerar_Relarotio(Campo, celulasRestantes, &Jogador);
 
                 continuar = 0;
                 system("cls");
             }
             else
             {
-                if( (Campo + col + lin * tamanho)->estaAberta)
+                if( (Campo + col + lin * tamanho)->Aberto)
                 {
                     printf("\nCoordenada ja foi escolhida!");
                     printf("\nInforme outra coordenada.\n");
@@ -268,7 +269,7 @@ void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas)
                 else
                 {
                     celulasRestantes--;
-                    (Campo + col + lin * tamanho)->estaAberta = 1;
+                    (Campo + col + lin * tamanho)->Aberto = 1;
                 }
             }
         }
@@ -280,25 +281,26 @@ void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas)
     }
 }
 
-void jogar()
+//Inicializacao de algumas variaveis
+void Jogar()
 {
 
     int tamanho = 10;
     int quantidadeBombas = 0;
-    configurarCampo(&tamanho, &quantidadeBombas);
+    Configurar_Campo(&tamanho, &quantidadeBombas);
 
     tpCelula Campo[tamanho][tamanho];
 
-    inicializarJogo(Campo, tamanho);
-    posicionarBombas(Campo, tamanho, quantidadeBombas);
-    contarBombas(Campo, tamanho);
+    Inicializar(Campo, tamanho);
+    Posicionar_Bombas(Campo, tamanho, quantidadeBombas);
+    Contar_Bombas(Campo, tamanho);
 
-    gameLoop(Campo, tamanho, quantidadeBombas);
+    Game_Loop(&Campo, tamanho, quantidadeBombas);
 
 }
 
-// Função para exibir as instruções do jogo
-void exibirInstrucoes()
+//Exibe o tutorial do jogo
+void Tutorial()
 {
     system("cls");
     printf("\nInstruções do Jogo:\n");
@@ -309,6 +311,7 @@ void exibirInstrucoes()
     getchar();
 }
 
+//Menu
 void Menu()
 {
     int opcao = 0;
@@ -329,13 +332,13 @@ void Menu()
         switch (opcao)
         {
         case 1:
-            jogar();
+            Jogar();
             break;
         case 2:
-            exibirInstrucoes();
+            Tutorial();
             break;
         case 3:
-            printf("Saindo do jogo. Ate logo!\n");
+            printf("\nSaindo do jogo. Ate logo!\n");
             break;
         default:
             printf("Opcao invalida! Tente novamente.\n");
