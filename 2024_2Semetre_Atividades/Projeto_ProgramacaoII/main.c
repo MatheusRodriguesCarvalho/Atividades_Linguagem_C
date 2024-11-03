@@ -23,11 +23,19 @@ void gravarNomeJogador(char *nomeJogador)
 
 void desenharCampo(tpCelula *Campo, int tamanho)
 {
+    system("cls");
     for(int linha = 0; linha < tamanho; linha++)
     {
         for(int coluna = 0; coluna < tamanho; coluna++)
         {
-            printf("%i", (Campo + coluna + linha * tamanho)->eBomba);
+            if ((Campo + coluna + linha * tamanho)->estaAberta == 1)
+            {
+                printf("%i", Campo->vizinhos);
+            }
+            else
+            {
+                printf("%c", 254);
+            }
         }
         printf("\n");
     }
@@ -38,11 +46,11 @@ void posicionarBombas(tpCelula *campo, int tamanho, int quantidadeBombas)
     srand(time(NULL));
     for(int i = 1; i <= quantidadeBombas; i++)
     {
-        int l = rand() % tamanho;
-        int c = rand() % tamanho;
-        if((campo + c + l * tamanho)->eBomba == 0)
+        int linha = rand() % tamanho;
+        int coluna = rand() % tamanho;
+        if((campo + coluna + linha * tamanho)->eBomba == 0)
         {
-            (campo + c + l * tamanho)->eBomba = 1;
+            (campo + coluna + linha * tamanho)->eBomba = 1;
         }
         else
             i--;
@@ -52,13 +60,13 @@ void posicionarBombas(tpCelula *campo, int tamanho, int quantidadeBombas)
 // funcao para inicializar a matriz do jogo
 void inicializarJogo(tpCelula *campo, int tamanho)
 {
-    for(int l = 0; l < tamanho; l++)
+    for(int linha = 0; linha < tamanho; linha++)
     {
-        for(int c = 0; c < tamanho; c++)
+        for(int coluna = 0; coluna < tamanho; coluna++)
         {
-            (campo + c + l * tamanho)->eBomba = 0;
-            (campo + c + l * tamanho)->estaAberta = 0;
-            (campo + c + l * tamanho)->vizinhos= 0;
+            (campo + coluna + linha * tamanho)->eBomba = 0;
+            (campo + coluna + linha * tamanho)->estaAberta = 0;
+            (campo + coluna + linha * tamanho)->vizinhos= 0;
         }
     }
 }
