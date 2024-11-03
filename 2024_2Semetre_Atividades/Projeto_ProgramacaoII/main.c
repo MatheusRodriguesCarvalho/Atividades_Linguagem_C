@@ -28,16 +28,54 @@ void desenharCampo(tpCelula *Campo, int tamanho)
     {
         for(int coluna = 0; coluna < tamanho; coluna++)
         {
-            if ((Campo + coluna + linha * tamanho)->estaAberta == 1)
+            if ((Campo + coluna + linha * tamanho)->estaAberta == 0)
             {
                 printf("%i", Campo->vizinhos);
+            }
+            else if ((Campo + coluna + linha * tamanho)->eBomba == 1)
+            {
+                printf("*");
             }
             else
             {
                 printf("%c", 254);
             }
+
         }
         printf("\n");
+    }
+}
+
+
+
+
+
+int coordenadaEhValida(int linha, int coluna, int tamanho){
+    return (linha >= 0 && linha < tamanho && coluna >= 0 && coluna < tamanho);
+}
+
+int quantBombasVizinhas(tpCelula *Campo, int linha, int coluna, int tamanho){
+    int quantidade = 0;
+    for(int i = -1; i <= 1; i++)
+    {
+        for(int j = -1; j <= 1; j++)
+        {
+            if(coordenadaEhValida(linha + i, coluna + j, tamanho) && (Campo + (coluna + i) + (linha + j) * tamanho)->eBomba)
+            {
+                quantidade++;
+            }
+        }
+    }
+    return quantidade;
+}
+
+
+// funcao para contar as bombas vizinhas
+void contarBombas(tpCelula *Campo, int tamanho){
+    for(int linha = 0; linha < tamanho; linha++){
+        for(int coluna = 0; coluna < tamanho; coluna++)
+            (Campo + coluna + linha * tamanho)->vizinhos = quantBombasVizinhas(Campo, linha, coluna, tamanho);
+            printf("(%i)", quantBombasVizinhas(Campo, linha, coluna, tamanho));
     }
 }
 
@@ -122,7 +160,8 @@ void jogar()
     inicializarJogo(Campo, tamanho);
     posicionarBombas(Campo, tamanho, quantidadeBombas);
 
-    //contarBombas(Campo, tamanho);
+    contarBombas(Campo, tamanho);
+
     desenharCampo(Campo, tamanho);
 
 }
