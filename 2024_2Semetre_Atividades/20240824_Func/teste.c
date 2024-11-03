@@ -6,4 +6,9 @@ int main (void)
     {
         printf("\n(%i)", i);
     }
+    while(1)
+    {
+        printf("\n(2)");
+        getchar();
+    }
 }

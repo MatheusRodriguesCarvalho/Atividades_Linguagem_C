@@ -3,16 +3,12 @@
 #include <time.h>
 #include <string.h>
 
-typedef struct
-{
-    int eBomba;
-    int estaAberta;
-    int vizinhos;
-} tpCelula;
+typedef struct{ int eBomba; int estaAberta; int vizinhos; } tpCelula;
 
 void gravarNomeJogador(char *nomeJogador)
 {
     printf("Digite o seu nome: ");
+    fflush(stdin);
     fgets(nomeJogador, 50, stdin);
     nomeJogador[strcspn(nomeJogador, "\n")] = '\0'; // remove o caractere de nova linha
 }
@@ -23,40 +19,44 @@ void gravarNomeJogador(char *nomeJogador)
 
 void desenharCampo(tpCelula *Campo, int tamanho)
 {
-    system("cls");
+    //system("cls");
     for(int linha = 0; linha < tamanho; linha++)
     {
         for(int coluna = 0; coluna < tamanho; coluna++)
         {
-            if ((Campo + coluna + linha * tamanho)->eBomba == 1)
+            if ((Campo + coluna + linha * tamanho)->estaAberta == 0)
             {
-                printf("*");
+                printf("%c", 254);
             }
             else
             {
-                printf("%i", (Campo + coluna + linha * tamanho)->vizinhos);
-                //printf("%c", 254);
+                if ((Campo + coluna + linha * tamanho)->eBomba == 1)
+                {
+                    printf("*");
+                }
+                else
+                {
+                    printf("%i", (Campo + coluna + linha * tamanho)->vizinhos);
+                }
             }
-
         }
         printf("\n");
     }
 }
 
-
-
-
-int coordenadaEhValida(int linha, int coluna, int tamanho){
+int coordenadaEhValida(int linha, int coluna, int tamanho)
+{
     return (linha >= 0 && linha < tamanho && coluna >= 0 && coluna < tamanho);
 }
 
-int quantBombasVizinhas(tpCelula *Campo, int linha, int coluna, int tamanho){
+int quantBombasVizinhas(tpCelula *Campo, int linha, int coluna, int tamanho)
+{
     int quantidade = 0;
     for(int i = -1; i <= 1; i++)
     {
         for(int j = -1; j <= 1; j++)
         {
-            if(coordenadaEhValida(linha + i, coluna + j, tamanho) && (Campo + (coluna + i) + (linha + j) * tamanho)->eBomba)
+            if(coordenadaEhValida(linha + i, coluna + j, tamanho) && (Campo + (coluna + j) + (linha + i) * tamanho)->eBomba)
             {
                 quantidade++;
             }
@@ -77,7 +77,7 @@ void contarBombas(tpCelula *Campo, int tamanho)
             (Campo + coluna + linha * tamanho)->vizinhos = quantBombasVizinhas(Campo, linha, coluna, tamanho);
             printf("(%i)", quantBombasVizinhas(Campo, linha, coluna, tamanho));
         }
-        printf("\n");
+        getchar();
     }
 }
 
