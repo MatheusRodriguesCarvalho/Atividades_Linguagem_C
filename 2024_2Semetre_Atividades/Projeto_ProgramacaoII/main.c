@@ -10,12 +10,23 @@ typedef struct{ int eBomba; int estaAberta; int vizinhos; } tpCelula;
 typedef struct{ char nome[MAX_NOME]; int pontuacao; int jogadasRealizadas; }
 tpJogador;
 
+
+void limparJogador(tpJogador *j)
+{
+
+    for (int i = 0; i < MAX_NOME; i++)
+    {
+        j->nome[i] = '\0';
+    }
+    j->jogadasRealizadas = 0;
+    j->pontuacao = 0;
+}
+
 void gravarNomeJogador(tpJogador *Jogador)
 {
     printf("Digite o seu nome: ");
     fflush(stdin);
-    fgets(*Jogador->nome, MAX_NOME, stdin);
-    Jogador[strcspn(Jogador, "\n")] = '\0'; // remove o caractere de nova linha
+    fgets(Jogador->nome, MAX_NOME, stdin);
 }
 
 void fimDeJogo(tpCelula *Campo, int tamanho, int lin, int col)
@@ -28,13 +39,12 @@ void fimDeJogo(tpCelula *Campo, int tamanho, int lin, int col)
 }
 
 //Gerando o relatorio em aruivo txt
-void gerarRelarotio(int celulasRestantes, int jogadas, char *nomeJogador)
+void gerarRelarotio(int celulasRestantes, tpJogador *Jogador)
 {
-    int pontuacao = (200 - celulasRestantes) * jogadas;
+    int pontuacao = (200 - celulasRestantes) * Jogador->jogadasRealizadas;
 
-    //gerarArquivo
     FILE *relatorio;
-    relatorio = fopen("teste.txt", "w");
+    relatorio = fopen("Relatorio.rlt", "wb");
 
     if(relatorio == NULL)
     {
@@ -42,19 +52,19 @@ void gerarRelarotio(int celulasRestantes, int jogadas, char *nomeJogador)
     }
     else
     {
-        char texto[2*MAX_NOME] = "Nome do Jogador: ";
-        fputs(strcat(texto,nomeJogador), relatorio);
-        
-        fputc('\n', relatorio);
-
-        fputs("Jogadas Realizadas: ", relatorio);
-        fputs(jogadas, relatorio);
+        printf("ok");
+        fprintf(relatorio, "\nJogador: ");
+        fwrite(Jogador->nome, MAX_NOME, 1, relatorio);
+        fprintf(relatorio, "\nJogadas Realizadas:  ");
+        fprintf(relatorio, "%i \n", Jogador->jogadasRealizadas);
+        fprintf(relatorio, "\nPontuacao:  ");
+        fprintf(relatorio, "%i \n", pontuacao);
+        printf("ok2");
 
         fclose(relatorio);
     }
 
 }
-
 
 void desenharCampo(tpCelula *Campo, int tamanho)
 {
@@ -213,14 +223,15 @@ void configurarCampo(int * tamanho, int * quantidadeBombas)
 
 }
 
-void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas, char *nomeJogador)
+void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas)
 {
     int lin, col;
     int continuar = 1;
     //algumas estatisticas
     int celulasRestantes = tamanho * tamanho - quantidadeBombas;
-    int jogadasRealizadas = 0;
-
+    tpJogador Jogador;
+    limparJogador(&Jogador);
+    
     while(continuar)
     {
         system("cls");
@@ -236,11 +247,12 @@ void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas, char *nomeJoga
 
         if( coordenadaEhValida(lin, col, tamanho) )
         {
+            Jogador.jogadasRealizadas++;
             if( (Campo + col + lin * tamanho)->eBomba)
             {
                 fimDeJogo(Campo, tamanho, lin, col);
-
-                gerarRelarotio(celulasRestantes, jogadasRealizadas, nomeJogador);
+                gravarNomeJogador(&Jogador);
+                gerarRelarotio(celulasRestantes, &Jogador);
 
                 continuar = 0;
                 getchar();
@@ -271,7 +283,6 @@ void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas, char *nomeJoga
 
 void jogar()
 {
-    tpJogador Jogador;
 
     int tamanho = 10;
     int quantidadeBombas = 0;
@@ -279,12 +290,11 @@ void jogar()
 
     tpCelula Campo[tamanho][tamanho];
 
-    gravarNomeJogador(&Jogador);
     inicializarJogo(Campo, tamanho);
     posicionarBombas(Campo, tamanho, quantidadeBombas);
     contarBombas(Campo, tamanho);
 
-    gameLoop(Campo, tamanho, quantidadeBombas, &Jogador);
+    gameLoop(Campo, tamanho, quantidadeBombas);
 
 }
 
