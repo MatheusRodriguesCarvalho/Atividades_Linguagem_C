@@ -20,13 +20,13 @@ void gravarNomeJogador(char *nomeJogador)
 void desenharCampo(tpCelula *Campo, int tamanho)
 {
     //system("cls");
-    printf("-  ");
+    printf("\n-  ");
     for(int i = 0; i<tamanho;i++)
     {
         if(i >= 10){ printf("%i",i); }
         else{ printf("%i ",i); }
     }
-    printf("\n");
+    printf("\n\n");
 
     for(int linha = 0; linha < tamanho; linha++)
     {
@@ -158,49 +158,54 @@ void configurarCampo(int * tamanho, int * quantidadeBombas)
 
 }
 
-void gameLoop(tpCelula *Campo, int tamanho)
+void gameLoop(tpCelula *Campo, int tamanho, int quantidadeBombas)
 {
     int lin, col;
     int continuar = 1;
-    desenharCampo(Campo, tamanho);
+    int celulasRestantes = tamanho * tamanho - quantidadeBombas;
 
     while(continuar)
     {
-        do{
-            printf("Digite a linha:");
-            fflush(stdin);
-            scanf("%i", &lin);
-            printf("Digite a Coluna:");
-            fflush(stdin);
-            scanf("%i", &col);
-            system("cls");
-        } while( coordenadaEhValida(lin, col, tamanho) );
-
+        system("cls");
+        desenharCampo(Campo, tamanho);
+        printf("\nHa %i espacos livres.", celulasRestantes);
+        printf("\nDigite a linha:");
         fflush(stdin);
+        scanf("%i", &lin);
+        printf("Digite a Coluna:");
+        fflush(stdin);
+        scanf("%i", &col);
+        fflush(stdin);
+
         if( coordenadaEhValida(lin, col, tamanho) )
         {
-            if( (Campo + col + lin * tamanho)->eBomba == 0)
+            if( (Campo + col + lin * tamanho)->eBomba)
             {
-                (Campo + col + lin * tamanho)->estaAberta = 1;
-            }
-            else if( (Campo + col + lin * tamanho)->estaAberta = 1 )
-            {
-                printf("Coordenada ja foi escolhida! informe outra coordenada.");
+                system("cls");
+                printf("\nHavia uma bomba na cordenada %ix%i\n", lin, col);
+                printf("\nE voce pisou nela. Fim de Jogo\n");
+                continuar = 0;
                 getchar();
                 system("cls");
             }
             else
             {
-                printf("Voce pisou em uma Bomba. Fim de Jogo");
-                continuar = 0;
-                getchar();
+                if( (Campo + col + lin * tamanho)->estaAberta)
+                {
+                    printf("\nCoordenada ja foi escolhida! informe outra coordenada.\n");
+                    getchar();
+                }
+                else
+                {
+                    celulasRestantes--;
+                    (Campo + col + lin * tamanho)->estaAberta = 1;
+                }
             }
         }
         else
         {
             printf("Coordenada informada eh invalida!");
             getchar();
-            //system("cls");
         }
     }
 }
@@ -220,7 +225,7 @@ void jogar()
     posicionarBombas(Campo, tamanho, quantidadeBombas);
     contarBombas(Campo, tamanho);
 
-    gameLoop(Campo, tamanho);
+    gameLoop(Campo, tamanho, quantidadeBombas);
 
 }
 
