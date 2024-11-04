@@ -223,6 +223,26 @@ void Configurar_Campo(int * tamanho, int * quantidadeBombas)
     }
 }
 
+void Abrir_Zeros(tpCelula *Campo, int lin, int col)
+{
+    /*
+    todo- 
+    Loop nas celulas ao redor da coordenada( lin x col ), abrindo a celula caso seja Zero ou esteja ao redor de um Zero
+    passivel de Recursividade, por motivos de porque sim
+    */
+    if(/*something*/)
+    {
+        for(/*something*/)
+        {
+            /*something*/
+        }
+    }
+    else
+    {
+        Abrir_Zeros(Campo, lin, col);
+        //verificar a posicao da recursividade para nao ficar em endless loop
+    }
+}
 //Repeticao do loop para jogar
 void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
 {
@@ -253,6 +273,8 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
             printf("\nO Campo foi limpo sem nenhuma bomba ter sido acertada.\n");
             Gravar_Nome(&Jogador);
             Gerar_Relarotio(Campo, celulasRestantes, &Jogador);
+            continuar = 0;
+            system("cls");
         }
         else if( Validacao_Coordadeda(lin, col, tamanho) )
         {
@@ -278,6 +300,7 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
                 {
                     celulasRestantes--;
                     (Campo + col + lin * tamanho)->Aberto = 1;
+                    Abrir_Zeros(Campo, lin, col);
                 }
             }
         }
