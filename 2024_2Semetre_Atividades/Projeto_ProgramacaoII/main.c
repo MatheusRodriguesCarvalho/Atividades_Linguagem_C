@@ -24,9 +24,65 @@ void Limpar_Jogador(tpJogador *j)
 
 void Gravar_Nome(tpJogador *Jogador)
 {
-    printf("Digite o seu nome: ");
+    printf("\nDigite o seu nome: ");
     fflush(stdin);
     fgets(Jogador->Nome, MAX_NOME, stdin);
+}
+
+//Pega o Campo e desenha na tela
+void Desenhar_Campo(tpCelula *Campo, int tamanho)
+{
+    //system("cls");
+    printf("\n-   ");
+    for(int i = 0; i<tamanho;i++)
+    {
+        if(i >= 10){ printf("%i",i); }
+        else{ printf("%i ",i); }
+    }
+    printf("\n\n");
+
+    for(int linha = 0; linha < tamanho; linha++)
+    {
+        if(linha>=10){printf("%i| ",linha);}
+        else{printf("%i | ",linha);}
+
+        for(int coluna = 0; coluna < tamanho; coluna++)
+        {
+            if ((Campo + coluna + linha * tamanho)->Aberto == 0)
+            {
+                printf("%c ", 254);
+            }
+            else
+            {
+                if ((Campo + coluna + linha * tamanho)->Bomba == 1)
+                {
+                    printf("* ");
+                }
+                else
+                {
+                    printf("%i ", (Campo + coluna + linha * tamanho)->aoRedor);
+                }
+            }
+
+        }
+        printf("| %i", linha);
+        printf("\n");
+    }
+}
+
+//Quando perder, a posicao das bombas serao revelados
+void Revela_Bombas(tpCelula *Campo, int tamanho)
+{
+    for(int linha = 0; linha < tamanho; linha++)
+    {
+        for(int coluna = 0; coluna < tamanho; coluna++)
+        {
+            if( (Campo + coluna + linha * tamanho)->Bomba)
+            {
+                (Campo + coluna + linha * tamanho)->Aberto = 1;
+            }
+        }
+    }
 }
 
 void Fim_Jogo(tpCelula *Campo, int tamanho, int lin, int col)
@@ -64,60 +120,6 @@ void Gerar_Relarotio(tpCelula *Campo, int celulasRestantes, tpJogador *Jogador)
         fclose(relatorio);
     }
 
-}
-
-//Pega o Campo e desenha na tela
-void Desenhar_Campo(tpCelula *Campo, int tamanho)
-{
-    //system("cls");
-    printf("\n-  ");
-    for(int i = 0; i<tamanho;i++)
-    {
-        if(i >= 10){ printf("%i",i); }
-        else{ printf("%i ",i); }
-    }
-    printf("\n\n");
-
-    for(int linha = 0; linha < tamanho; linha++)
-    {
-        if(linha>=10){printf("%i ",linha);}
-        else{printf("%i  ",linha);}
-
-        for(int coluna = 0; coluna < tamanho; coluna++)
-        {
-            if ((Campo + coluna + linha * tamanho)->Aberto == 0)
-            {
-                printf("%c ", 254);
-            }
-            else
-            {
-                if ((Campo + coluna + linha * tamanho)->Bomba == 1)
-                {
-                    printf("* ");
-                }
-                else
-                {
-                    printf("%i ", (Campo + coluna + linha * tamanho)->aoRedor);
-                }
-            }
-        }
-        printf("\n");
-    }
-}
-
-//Quando perder, a posicao das bombas serao revelados
-void Revela_Bombas(tpCelula *Campo, int tamanho)
-{
-    for(int linha = 0; linha < tamanho; linha++)
-    {
-        for(int coluna = 0; coluna < tamanho; coluna++)
-        {
-            if( (Campo + coluna + linha * tamanho)->Bomba)
-            {
-                (Campo + coluna + linha * tamanho)->Aberto = 1;
-            }
-        }
-    }
 }
 
 //Valida as coordenadas em relacao ao tamanho estabelacido
@@ -223,26 +225,35 @@ void Configurar_Campo(int * tamanho, int * quantidadeBombas)
     }
 }
 
-void Abrir_Zeros(tpCelula *Campo, int lin, int col)
+//Loop nas celulas ao redor da coordenada( lin x col )
+//abrindo a celula caso seja Zero ou esteja ao redor de um Zero
+//passivel de Recursividade, por motivos de porque sim
+void Abrir_Zeros(tpCelula *Campo, int lin, int col, int tamanho)
 {
-    /*
-    todo- 
-    Loop nas celulas ao redor da coordenada( lin x col ), abrindo a celula caso seja Zero ou esteja ao redor de um Zero
-    passivel de Recursividade, por motivos de porque sim
-    */
-    if(/*something*/)
+    int vizinho = 1;
+    int aberto = 0;
+    for(int i = -1; i <= 1; i++)
     {
-        for(/*something*/)
+        for(int j = -1; j <= 1; j++)
         {
-            /*something*/
+            int nova_linha = (lin + i);
+            int nova_coluna = (col + j);
+
+            vizinho = (Campo + col + lin * tamanho)->aoRedor;
+            aberto = (Campo + nova_coluna + nova_linha * tamanho)->Aberto;
+            if( (Validacao_Coordadeda(nova_linha, nova_coluna, tamanho)) && vizinho == 0 && aberto == 0)
+            {
+                (Campo + nova_coluna + (nova_linha * tamanho) )->Aberto = 1;
+                Abrir_Zeros(Campo, nova_linha, nova_coluna, tamanho);
+                //printf("ok1");
+            }
+            //printf("\n fim j (%i x %i), r = %i\n", i, j, vizinho);
         }
-    }
-    else
-    {
-        Abrir_Zeros(Campo, lin, col);
-        //verificar a posicao da recursividade para nao ficar em endless loop
+        //printf("\nPAUSA VERIFICADORA\n");
+        //getchar();
     }
 }
+
 //Repeticao do loop para jogar
 void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
 {
@@ -267,10 +278,10 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
         fflush(stdin);
 
         //Verificar
-        if (celulasRestantes <= 20)
+        if (celulasRestantes <= 1)
         {
             printf("\nVoce finalizou o Jogo.\n");
-            printf("\nO Campo foi limpo sem nenhuma bomba ter sido acertada.\n");
+            printf("\nO Campo foi limpo sem nenhuma bomba ter sido acertada.");
             Gravar_Nome(&Jogador);
             Gerar_Relarotio(Campo, celulasRestantes, &Jogador);
             continuar = 0;
@@ -300,7 +311,7 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
                 {
                     celulasRestantes--;
                     (Campo + col + lin * tamanho)->Aberto = 1;
-                    Abrir_Zeros(Campo, lin, col);
+                    Abrir_Zeros(Campo, lin, col, tamanho);
                 }
             }
         }
