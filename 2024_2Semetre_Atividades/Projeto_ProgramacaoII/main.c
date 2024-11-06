@@ -5,7 +5,7 @@
 
 #define MAX_NOME 50
 
-typedef struct{ int Bomba; int Aberto; int aoRedor; } tpCelula;
+typedef struct{ int Bomba; int Aberto; int aoRedor; int Bloqueado; } tpCelula;
 
 typedef struct{ char Nome[MAX_NOME]; int Pontuacao; int JogadasRealizadas; }
 tpJogador;
@@ -60,7 +60,14 @@ void Desenhar_Campo(tpCelula *Campo, int tamanho)
                 }
                 else
                 {
-                    printf("%i ", (Campo + coluna + linha * tamanho)->aoRedor);
+                    if((Campo + coluna + linha * tamanho)->Bloqueado == 1)
+                    {
+                        printf("& ");
+                    }
+                    else
+                    {
+                        printf("%i ", (Campo + coluna + linha * tamanho)->aoRedor);
+                    }
                 }
             }
 
@@ -254,6 +261,11 @@ void Abrir_Zeros(tpCelula *Campo, int lin, int col, int tamanho)
     }
 }
 
+void Bloquear_Celula(tpCelula *Campo, int lin, int col)
+{
+
+}
+
 //Repeticao do loop para jogar
 void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
 {
@@ -269,6 +281,7 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
         system("cls");
         Desenhar_Campo(Campo, tamanho);
         printf("\nHa %i espacos sem Bombas.", celulasRestantes);
+        printf("Digite um valor negativo para poder bloquear uma Celula.");
         printf("\nDigite a linha:");
         fflush(stdin);
         scanf("%i", &lin);
@@ -317,8 +330,15 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
         }
         else
         {
-            printf("Coordenada informada eh invalida!");
-            getchar();
+            if(col < -1 || lin < -1)
+            {
+                Bloquear_Celula(Campo, lin, col);
+            }
+            else
+            {
+                printf("Coordenada informada eh invalida!");
+                getchar();
+            }
         }
     }
 }
