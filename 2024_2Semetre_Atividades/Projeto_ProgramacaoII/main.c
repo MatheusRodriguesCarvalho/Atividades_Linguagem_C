@@ -433,8 +433,8 @@ void Visual_Menu()
     56 = oito
     */
 
-    //Menu com apari��es de caracteres aleatorios
-    //Um numero aleatorio sera gerado como indice de caracteres que ir� aparecer no menu e ir� mudar conforme for executado
+    //Menu com aparicoes de caracteres aleatorios
+    //Um numero aleatorio sera gerado como indice de caracteres que ira aparecer no menu e ira mudar conforme for executado
     int caracteres[9] = {254, 255, 42, 48, 49, 50, 51, 52, 56};
       printf("|-----------------------------|");
     printf("\n        %c                    %c", caracteres[aleatorio(9)], caracteres[aleatorio(7)]);
