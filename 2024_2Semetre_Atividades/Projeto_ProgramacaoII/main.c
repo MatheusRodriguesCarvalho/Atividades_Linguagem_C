@@ -107,7 +107,7 @@ void Gerar_Relarotio(tpCelula *Campo, int celulasRestantes, tpJogador *Jogador)
     int pontuacao = (200 - celulasRestantes) * Jogador->JogadasRealizadas;
 
     FILE *relatorio;
-    relatorio = fopen("Relatorio.rlt", "wb");
+    relatorio = fopen("Relatorio.rlt", "ab");
 
     if(relatorio == NULL)
     {
@@ -212,28 +212,28 @@ int Configurar_Campo(int * tamanho, int * quantidadeBombas)
         scanf("%c", &dificuldade);
         dificuldade = toupper(dificuldade);
         system("cls");
-        //condicional
+
+        switch (dificuldade)
+        {
+        case 'A':
+            *tamanho = 10;
+            *quantidadeBombas = 20;
+            break;
+        case 'B':
+            *tamanho  = 12;
+            *quantidadeBombas = 30;
+            break;
+        case 'C':
+            *tamanho  = 15;
+            *quantidadeBombas = 40;
+            break;
+        case '0':
+            printf("\nSaindo...\n");
+            break;
+
+        }
     }
     while (dificuldade != 'A' && dificuldade != 'B' && dificuldade != 'C' && dificuldade != '0');
-
-    switch (dificuldade)
-    {
-    case 'A':
-        *tamanho = 10;
-        *quantidadeBombas = 20;
-        break;
-    case 'B':
-        *tamanho  = 12;
-        *quantidadeBombas = 30;
-        break;
-    case 'C':
-        *tamanho  = 15;
-        *quantidadeBombas = 40;
-        break;
-    case '0':
-        printf("\nSaindo...\n");
-        break;
-    }
 }
 
 //Loop nas celulas ao redor da coordenada( lin x col )
@@ -292,7 +292,8 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
         system("cls");
         Desenhar_Campo(Campo, tamanho);
         printf("\nHa %i espacos sem Bombas.", celulasRestantes);
-        printf("\nDigite um valor negativo para poder bloquear uma Celula.");
+        printf("\nDigite um valor Positivo para escolher uma Celula.");
+        printf("\nDigite um valor Negativo para Bloquear ou Desbloquear uma Celula.");
         printf("\nDigite a linha:");
         fflush(stdin);
         scanf("%i", &lin);
