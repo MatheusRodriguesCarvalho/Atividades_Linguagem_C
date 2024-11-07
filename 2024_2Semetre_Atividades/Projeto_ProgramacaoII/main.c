@@ -5,7 +5,7 @@
 
 #define MAX_NOME 50
 
-typedef struct{ int Bomba; int Aberto; int aoRedor; int Bloqueado; } tpCelula;
+typedef struct{ int Bomba; int Aberto; int aoRedor; } tpCelula;
 
 typedef struct{ char Nome[MAX_NOME]; int Pontuacao; int JogadasRealizadas; }
 tpJogador;
@@ -60,14 +60,7 @@ void Desenhar_Campo(tpCelula *Campo, int tamanho)
                 }
                 else
                 {
-                    if((Campo + coluna + linha * tamanho)->Bloqueado == 1)
-                    {
-                        printf("& ");
-                    }
-                    else
-                    {
-                        printf("%i ", (Campo + coluna + linha * tamanho)->aoRedor);
-                    }
+                    printf("%i ", (Campo + coluna + linha * tamanho)->aoRedor);
                 }
             }
 
@@ -196,7 +189,7 @@ void Inicializar(tpCelula *Campo, int tamanho)
 }
 
 //Define a Dificuldade do Jogo
-void Configurar_Campo(int * tamanho, int * quantidadeBombas)
+int Configurar_Campo(int * tamanho, int * quantidadeBombas)
 {
     char dificuldade;
 
@@ -206,6 +199,7 @@ void Configurar_Campo(int * tamanho, int * quantidadeBombas)
         printf("\nA - Facil (10x10, 20 Bombas)");
         printf("\nB - Medio (12x12, 30 Bombas)");
         printf("\nC - Dificil (15x15, 40 Bombas)");
+        printf("\n0 - Voltar");
         printf("\nDigite sua Escolha:");
         fflush(stdin);
         scanf("%c", &dificuldade);
@@ -213,7 +207,7 @@ void Configurar_Campo(int * tamanho, int * quantidadeBombas)
         system("cls");
         //condicional
     }
-    while (dificuldade != 'A' && dificuldade != 'B' && dificuldade != 'C');
+    while (dificuldade != 'A' && dificuldade != 'B' && dificuldade != 'C' && dificuldade != '0');
 
     switch (dificuldade)
     {
@@ -228,6 +222,9 @@ void Configurar_Campo(int * tamanho, int * quantidadeBombas)
     case 'C':
         *tamanho  = 15;
         *quantidadeBombas = 40;
+        break;
+    case '0':
+        printf("\nSaindo...\n");
         break;
     }
 }
@@ -261,11 +258,6 @@ void Abrir_Zeros(tpCelula *Campo, int lin, int col, int tamanho)
     }
 }
 
-void Bloquear_Celula(tpCelula *Campo, int lin, int col)
-{
-
-}
-
 //Repeticao do loop para jogar
 void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
 {
@@ -281,7 +273,6 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
         system("cls");
         Desenhar_Campo(Campo, tamanho);
         printf("\nHa %i espacos sem Bombas.", celulasRestantes);
-        printf("Digite um valor negativo para poder bloquear uma Celula.");
         printf("\nDigite a linha:");
         fflush(stdin);
         scanf("%i", &lin);
@@ -317,7 +308,7 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
                 if( (Campo + col + lin * tamanho)->Aberto)
                 {
                     printf("\nCoordenada ja foi escolhida!");
-                    printf("\nInforme outra coordenada.\n");
+                    printf("\nInforme outra coordenada.(%ix%i)\n", lin, col);
                     getchar();
                 }
                 else
@@ -330,15 +321,8 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
         }
         else
         {
-            if(col < -1 || lin < -1)
-            {
-                Bloquear_Celula(Campo, lin, col);
-            }
-            else
-            {
-                printf("Coordenada informada eh invalida!");
-                getchar();
-            }
+            printf("Coordenada informada eh invalida!");
+            getchar();
         }
     }
 }
@@ -349,15 +333,21 @@ void Jogar()
 
     int tamanho = 10;
     int quantidadeBombas = 0;
-    Configurar_Campo(&tamanho, &quantidadeBombas);
 
-    tpCelula Campo[tamanho][tamanho];
+    if (Configurar_Campo(&tamanho, &quantidadeBombas))
+    {
+        tpCelula Campo[tamanho][tamanho];
 
-    Inicializar(Campo, tamanho);
-    Posicionar_Bombas(Campo, tamanho, quantidadeBombas);
-    Contar_Bombas(Campo, tamanho);
+        Inicializar(Campo, tamanho);
+        Posicionar_Bombas(Campo, tamanho, quantidadeBombas);
+        Contar_Bombas(Campo, tamanho);
 
-    Game_Loop(&Campo, tamanho, quantidadeBombas);
+        Game_Loop(&Campo, tamanho, quantidadeBombas);
+    }
+    else
+    {
+        system("cls");
+    }
 
 }
 
@@ -365,12 +355,53 @@ void Jogar()
 void Tutorial()
 {
     system("cls");
-    printf("\nInstruções do Jogo:\n");
-    printf("Haverá um determinado Numero de Bombas espalhadas pelo Campo.\n");
-    printf("Seu objetivo eh Selecionar todas as calulas que nao possuirem bomba.\n");
-    printf("Voce precisara escolher uma coordenada de linha e coluna para abrir a celula.\n");
-    printf("Os numeros nas celulas abertas indicaram a quantidade de bombas nas celulas ao redor.\n\n");
+    printf("\n| Instrucoes do Jogo: \n\n");
+    Sleep(500);
+    printf("|-------------------------------------------------------------------------------------------------|\n");
+    Sleep(500);
+    printf("|                  Havera um determinado Numero de Bombas espalhadas pelo Campo.                  |\n");
+    Sleep(500);
+    printf("|              Seu objetivo eh Selecionar todas as calulas que nao possuiam bomba.                |\n");
+    Sleep(500);
+    printf("|           Voce precisara escolher uma coordenada (linha x coluna) para abrir a celula.          |\n");
+    Sleep(500);
+    printf("|      Os numeros nas celulas abertas indicaram a quantidade de bombas nas celulas ao redor.      |\n");
+    Sleep(500);
+    printf("|-------------------------------------------------------------------------------------------------|\n\n");
+    fflush(stdin);
     getchar();
+}
+
+int aleatorio(int max)
+{
+    srand(time(NULL));
+    int valor = rand() % max;
+    return valor;
+}
+
+void Visual_Menu()
+{
+    /*
+    254 = celula
+    255 =
+    42 = bomba
+    48 = zero
+    49 = um
+    50 = dois
+    51 = tres
+    52 = quatro
+    56 = oito
+    */
+    int caracteres[9] = {254, 255, 42, 48, 49, 50, 51, 52, 56};
+      printf("|-----------------------------|");
+    printf("\n        %c                    %c", caracteres[aleatorio(9)], caracteres[aleatorio(7)]);
+    printf("\n        CAMPO MINADO %c        ", caracteres[aleatorio(6)]);
+    printf("\n        1. Iniciar Jogo   %c   ", caracteres[aleatorio(5)]);
+    printf("\n   %c    2. Instrucoes         ", caracteres[aleatorio(4)]);
+    printf("\n        3. Sair         %c     ", caracteres[aleatorio(3)]);
+    printf("\n     %c                        ", caracteres[aleatorio(8)]);
+    printf("\n|-----------------------------|");
+    printf("\n|Escolha uma opcao: ");
 }
 
 //Menu
@@ -381,13 +412,7 @@ void Menu()
     while (opcao != 3)
     {
         system("cls");
-        printf("\n---------------------------\n");
-        printf("\n BEM VINDO AO CAMPO MINADO \n");
-        printf("\n---------------------------\n");
-        printf("1. Iniciar Jogo\n");
-        printf("2. Instrucoes\n");
-        printf("3. Sair\n");
-        printf("Escolha uma opcao: ");
+        Visual_Menu();
         fflush(stdin);
         scanf("%d", &opcao);
 
