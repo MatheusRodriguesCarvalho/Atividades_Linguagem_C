@@ -5,7 +5,7 @@
 
 #define MAX_NOME 50
 
-typedef struct{ int Bomba; int Aberto; int aoRedor; } tpCelula;
+typedef struct{ int Bomba; int Aberto; int aoRedor; int Bloqueado; } tpCelula;
 
 typedef struct{ char Nome[MAX_NOME]; int Pontuacao; int JogadasRealizadas; }
 tpJogador;
@@ -48,19 +48,26 @@ void Desenhar_Campo(tpCelula *Campo, int tamanho)
 
         for(int coluna = 0; coluna < tamanho; coluna++)
         {
-            if ((Campo + coluna + linha * tamanho)->Aberto == 0)
+            if ((Campo + coluna + linha * tamanho)->Bloqueado == 1)
             {
-                printf("%c ", 254);
+                printf("& ");
             }
             else
             {
-                if ((Campo + coluna + linha * tamanho)->Bomba == 1)
+                if ((Campo + coluna + linha * tamanho)->Aberto == 0)
                 {
-                    printf("* ");
+                    printf("%c ", 254);
                 }
                 else
                 {
-                    printf("%i ", (Campo + coluna + linha * tamanho)->aoRedor);
+                    if((Campo + coluna + linha * tamanho)->Bomba == 1)
+                    {
+                        printf("* ");
+                    }
+                    else
+                    {
+                        printf("%i ", (Campo + coluna + linha * tamanho)->aoRedor);
+                    }
                 }
             }
 
@@ -258,6 +265,18 @@ void Abrir_Zeros(tpCelula *Campo, int lin, int col, int tamanho)
     }
 }
 
+void Bloquear_Celula(tpCelula *Campo, int lin, int col, int tamanho)
+{
+    if ( (Campo + col + lin * tamanho)->Bloqueado)
+    {
+        (Campo + col + lin * tamanho)->Bloqueado = 0;
+    }
+    else
+    {
+        (Campo + col + lin * tamanho)->Bloqueado = 1;
+    }
+}
+
 //Repeticao do loop para jogar
 void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
 {
@@ -273,6 +292,7 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
         system("cls");
         Desenhar_Campo(Campo, tamanho);
         printf("\nHa %i espacos sem Bombas.", celulasRestantes);
+        printf("\nDigite um valor negativo para poder bloquear uma Celula.");
         printf("\nDigite a linha:");
         fflush(stdin);
         scanf("%i", &lin);
@@ -282,7 +302,7 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
         fflush(stdin);
 
         //Verificar
-        if (celulasRestantes <= 1)
+        if (celulasRestantes <= 1) //Vitoria
         {
             printf("\nVoce finalizou o Jogo.\n");
             printf("\nO Campo foi limpo sem nenhuma bomba ter sido acertada.");
@@ -291,38 +311,55 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
             continuar = 0;
             system("cls");
         }
-        else if( Validacao_Coordadeda(lin, col, tamanho) )
+        else if( Validacao_Coordadeda(lin, col, tamanho) ) //se a coordenada for valida
         {
             Jogador.JogadasRealizadas++;
-            if( (Campo + col + lin * tamanho)->Bomba)
+            if( (Campo + col + lin * tamanho)->Bloqueado )
             {
-                Fim_Jogo(Campo, tamanho, lin, col);
-                Gravar_Nome(&Jogador);
-                Gerar_Relarotio(Campo, celulasRestantes, &Jogador);
-
-                continuar = 0;
-                system("cls");
+                printf("\nCelula bloqueada");
+                getchar();
             }
             else
             {
-                if( (Campo + col + lin * tamanho)->Aberto)
+                if( (Campo + col + lin * tamanho)->Bomba)
                 {
-                    printf("\nCoordenada ja foi escolhida!");
-                    printf("\nInforme outra coordenada.(%ix%i)\n", lin, col);
-                    getchar();
+                    Fim_Jogo(Campo, tamanho, lin, col);
+                    Gravar_Nome(&Jogador);
+                    Gerar_Relarotio(Campo, celulasRestantes, &Jogador);
+
+                    continuar = 0;
+                    system("cls");
                 }
                 else
                 {
-                    celulasRestantes--;
-                    (Campo + col + lin * tamanho)->Aberto = 1;
-                    Abrir_Zeros(Campo, lin, col, tamanho);
+                    if( (Campo + col + lin * tamanho)->Aberto)
+                    {
+                        printf("\nCoordenada ja foi escolhida!");
+                        printf("\nInforme outra coordenada.(%ix%i)\n", lin, col);
+                        getchar();
+                    }
+                    else
+                    {
+                        celulasRestantes--;
+                        (Campo + col + lin * tamanho)->Aberto = 1;
+                        Abrir_Zeros(Campo, lin, col, tamanho);
+                    }
                 }
             }
         }
-        else
+        else // se a coordenada nao for valida
         {
-            printf("Coordenada informada eh invalida!");
-            getchar();
+            if(col < 0 || lin < 0)
+            {
+                lin = abs(lin);
+                col = abs(col);
+                Bloquear_Celula(Campo, lin, col, tamanho);
+            }
+            else
+            {
+                printf("Coordenada informada eh invalida!");
+                getchar();
+            }
         }
     }
 }
