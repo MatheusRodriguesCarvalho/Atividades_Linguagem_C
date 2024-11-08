@@ -50,7 +50,7 @@ void Desenhar_Campo(tpCelula *Campo, int tamanho)
         {
             if ((Campo + coluna + linha * tamanho)->Bloqueado == 1)
             {
-                printf("& ");
+                printf("# ");
             }
             else
             {
@@ -243,11 +243,10 @@ int Configurar_Campo(int * tamanho, int * quantidadeBombas)
 //Loop nas celulas ao redor da coordenada( lin x col )
 //abrindo a celula caso seja Zero ou esteja ao redor de um Zero
 //passivel de Recursividade, por motivos de porque sim
-void Abrir_Zeros(tpCelula *Campo, int lin, int col, int tamanho, int *CelulasRestantes)
+void Abrir_Zeros(tpCelula *Campo, int lin, int col, int tamanho)
 {
     int vizinho = 1;
     int aberto = 0;
-    int celulas = 0;
     for(int i = -1; i <= 1; i++)
     {
         for(int j = -1; j <= 1; j++)
@@ -260,22 +259,31 @@ void Abrir_Zeros(tpCelula *Campo, int lin, int col, int tamanho, int *CelulasRes
             if( (Validacao_Coordena(nova_linha, nova_coluna, tamanho)) && vizinho == 0 && aberto == 0)
             {
                 (Campo + nova_coluna + (nova_linha * tamanho) )->Aberto = 1;
-                celulas++;
-                Abrir_Zeros(Campo, nova_linha, nova_coluna, tamanho, &CelulasRestantes);
-                //printf("ok1");
+                Abrir_Zeros(Campo, nova_linha, nova_coluna, tamanho);
             }
-            //printf("\n fim j (%i x %i), r = %i\n", i, j, vizinho);
         }
-        //printf("\nPAUSA VERIFICADORA\n");
-        //getchar();
     }
-    //printf("%i - %i", celulas, *CelulasRestantes);
-    *CelulasRestantes = *CelulasRestantes - celulas;
+}
+
+int Contar_Restantes(tpCelula *Campo, int tamanho)
+{
+    int valor = 0;
+    for(int i = 0; i < tamanho; i++)
+    {
+        for(int j = 0; j < tamanho; j++)
+        {
+            if( (Campo + j + i * tamanho)->Bomba == 0 && (Campo + j + i * tamanho)->Aberto == 0)
+            {
+                valor++;
+            }
+        }
+    }
+    return valor;
 }
 
 void Bloquear_Celula(tpCelula *Campo, int lin, int col, int tamanho)
 {
-    if ( (Campo + col + lin * tamanho)->Bloqueado) // Se a c�lula j� estiver bloqueada e for usado o comando pra bloquear, a c�lula � desbloqueada
+    if ( (Campo + col + lin * tamanho)->Bloqueado) // Se a celula ja estiver bloqueada e for usado o comando pra bloquear, a c�lula � desbloqueada
     {
         (Campo + col + lin * tamanho)->Bloqueado = 0;
     }
@@ -298,6 +306,8 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
     {
         system("cls");
         Desenhar_Campo(Campo, tamanho);
+        celulasRestantes = Contar_Restantes(Campo, tamanho);
+
         printf("\nHa %i espacos sem Bombas.", celulasRestantes);
         printf("\n[Use valores Positivos] para {Escolher} uma Celula.");
         printf("\n[Use valores Negativos] para {Bloquear} ou {Desbloquear} uma Celula.");
@@ -348,9 +358,8 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
                     }
                     else
                     {
-                        celulasRestantes--;
                         (Campo + col + lin * tamanho)->Aberto = 1;
-                        Abrir_Zeros(Campo, lin, col, tamanho, &celulasRestantes);
+                        Abrir_Zeros(Campo, lin, col, tamanho);
                     }
                 }
             }
