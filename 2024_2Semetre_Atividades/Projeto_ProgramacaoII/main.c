@@ -265,6 +265,13 @@ void Abrir_Zeros(tpCelula *Campo, int lin, int col, int tamanho)
     }
 }
 
+void Mostrar_Vitoria()
+{
+    printf("\nVoce finalizou o Jogo.\n");
+    printf("        P         \n   ___________    \n  '._==_==_=_.'   \n  .-\:      /-.   \n | (|:. 1   |) |  \n  '-|:.     |-'   \n    \::.    /     \n     '::. .'      \n       ) (        \n     _.' '._      \n     -=---=-      \n                  \n");
+    printf("\nO Campo foi limpo sem nenhuma bomba ter sido acertada.");
+}
+
 int Contar_Restantes(tpCelula *Campo, int tamanho)
 {
     int valor = 0;
@@ -320,10 +327,9 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
         fflush(stdin);
 
         //Verificar
-        if (celulasRestantes <= 1) //Vitoria
+        if (celulasRestantes <= 0) //Vitoria
         {
-            printf("\nVoce finalizou o Jogo.\n");
-            printf("\nO Campo foi limpo sem nenhuma bomba ter sido acertada.");
+            Mostrar_Vitoria();
             Gravar_Nome(&Jogador);
             Gerar_Relatorio(Campo, celulasRestantes, &Jogador);
             continuar = 0;
