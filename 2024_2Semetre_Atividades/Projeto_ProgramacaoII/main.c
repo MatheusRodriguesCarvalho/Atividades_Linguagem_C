@@ -11,6 +11,7 @@ typedef struct{ char Nome[MAX_NOME]; int Pontuacao; int JogadasRealizadas; }
 tpJogador;
 
 
+//Limpa o lixo da memoria da variavel do Jogador
 void Limpar_Jogador(tpJogador *j)
 {
 
@@ -22,6 +23,22 @@ void Limpar_Jogador(tpJogador *j)
     j->Pontuacao = 0;
 }
 
+//Inicializa e Limpa cada Celula do Campo
+void Inicializar(tpCelula *Campo, int tamanho)
+{
+    for(int linha = 0; linha < tamanho; linha++)
+    {
+        for(int coluna = 0; coluna < tamanho; coluna++)
+        {
+            (Campo + coluna + linha * tamanho)->Bomba = 0;
+            (Campo + coluna + linha * tamanho)->Aberto = 0;
+            (Campo + coluna + linha * tamanho)->aoRedor = 0;
+            (Campo + coluna + linha * tamanho)->Bloqueado = 0;
+        }
+    }
+}
+
+//Solicita ao Jogador que digite seu nome e grava para gerar o relatorio
 void Gravar_Nome(tpJogador *Jogador)
 {
     printf("\nDigite o seu nome: ");
@@ -92,7 +109,16 @@ void Revela_Bombas(tpCelula *Campo, int tamanho)
     }
 }
 
-void Fim_Jogo(tpCelula *Campo, int tamanho, int lin, int col)
+//Caso o jogador ganhe
+void Mostrar_Vitoria()
+{
+    printf("\nVoce finalizou o Jogo.\n");
+    printf("        P         \n   ___________    \n  '._==_==_=_.'   \n  .-\:      /-.   \n | (|:. 1   |) |  \n  '-|:.     |-'   \n    \::.    /     \n     '::. .'      \n       ) (        \n     _.' '._      \n     -=---=-      \n                  \n");
+    printf("\nO Campo foi limpo sem nenhuma bomba ter sido acertada.");
+}
+
+//Caso o Jogador perca
+void Mostrar_Derrota(tpCelula *Campo, int tamanho, int lin, int col)
 {
     system("cls");
     Revela_Bombas(Campo, tamanho);
@@ -101,7 +127,7 @@ void Fim_Jogo(tpCelula *Campo, int tamanho, int lin, int col)
     printf("E voce pisou nela. Fim de Jogo\n");
 }
 
-//Gerando o relatorio em aruivo .rlt
+//Gerando o relatorio em arquivo .rlt com as informacoes do Jogador
 void Gerar_Relatorio(tpCelula *Campo, int celulasRestantes, tpJogador *Jogador)
 {
     int pontuacao = (200 - celulasRestantes) * Jogador->JogadasRealizadas;
@@ -129,7 +155,7 @@ void Gerar_Relatorio(tpCelula *Campo, int celulasRestantes, tpJogador *Jogador)
 
 }
 
-//Valida as coordenadas em relacao ao tamanho estabelacido
+//Valida as coordenadas em relacao ao tamanho do campo estabelacido
 int Validacao_Coordena(int linha, int coluna, int tamanho)
 {
     return (linha >= 0 && linha < tamanho && coluna >= 0 && coluna < tamanho);
@@ -152,7 +178,7 @@ int Bombas_Proximas(tpCelula *Campo, int linha, int coluna, int tamanho)
     return quantidade;
 }
 
-//Atribui a quantidade de bombas ao redor de uma determinada celula, de todas as celulas
+//Atribui a quantidade de bombas ao redor de uma determinada celula, de todas as celulas do campo
 void Contar_Bombas(tpCelula *Campo, int tamanho)
 {
     for(int linha = 0; linha < tamanho; linha++)
@@ -164,7 +190,7 @@ void Contar_Bombas(tpCelula *Campo, int tamanho)
     }
 }
 
-//Posiciona as bombas em celulas aleatorias, se repitir uma posicao, ele retorna
+//Posiciona as bombas em celulas aleatorias, se repitir uma posicao, ele retorna para nao sobrescrever
 void Posicionar_Bombas(tpCelula *Campo, int tamanho, int quantidadeBombas)
 {
     srand(time(NULL));
@@ -178,21 +204,6 @@ void Posicionar_Bombas(tpCelula *Campo, int tamanho, int quantidadeBombas)
         }
         else
             i--;
-    }
-}
-
-//Inicializa e Limpa cada Celula do Campo
-void Inicializar(tpCelula *Campo, int tamanho)
-{
-    for(int linha = 0; linha < tamanho; linha++)
-    {
-        for(int coluna = 0; coluna < tamanho; coluna++)
-        {
-            (Campo + coluna + linha * tamanho)->Bomba = 0;
-            (Campo + coluna + linha * tamanho)->Aberto = 0;
-            (Campo + coluna + linha * tamanho)->aoRedor = 0;
-            (Campo + coluna + linha * tamanho)->Bloqueado = 0;
-        }
     }
 }
 
@@ -240,9 +251,7 @@ int Configurar_Campo(int * tamanho, int * quantidadeBombas)
     return 1;
 }
 
-//Loop nas celulas ao redor da coordenada( lin x col )
-//abrindo a celula caso seja Zero ou esteja ao redor de um Zero
-//passivel de Recursividade, por motivos de porque sim
+//Funcao com a possibilidade de Recursividade para percorrer todas as celulas passiveis de abertura
 void Abrir_Zeros(tpCelula *Campo, int lin, int col, int tamanho)
 {
     int vizinho = 1;
@@ -265,13 +274,7 @@ void Abrir_Zeros(tpCelula *Campo, int lin, int col, int tamanho)
     }
 }
 
-void Mostrar_Vitoria()
-{
-    printf("\nVoce finalizou o Jogo.\n");
-    printf("        P         \n   ___________    \n  '._==_==_=_.'   \n  .-\:      /-.   \n | (|:. 1   |) |  \n  '-|:.     |-'   \n    \::.    /     \n     '::. .'      \n       ) (        \n     _.' '._      \n     -=---=-      \n                  \n");
-    printf("\nO Campo foi limpo sem nenhuma bomba ter sido acertada.");
-}
-
+//Conta Quantas Celulas estão abertas
 int Contar_Restantes(tpCelula *Campo, int tamanho)
 {
     int valor = 0;
@@ -288,9 +291,10 @@ int Contar_Restantes(tpCelula *Campo, int tamanho)
     return valor;
 }
 
+//Bloqueia a celula se estiver Desbloqueada, e Desbloquea se estiver desbloqueada
 void Bloquear_Celula(tpCelula *Campo, int lin, int col, int tamanho)
 {
-    if ( (Campo + col + lin * tamanho)->Bloqueado) // Se a celula ja estiver bloqueada e for usado o comando pra bloquear, a c�lula � desbloqueada
+    if ( (Campo + col + lin * tamanho)->Bloqueado)
     {
         (Campo + col + lin * tamanho)->Bloqueado = 0;
     }
@@ -300,7 +304,7 @@ void Bloquear_Celula(tpCelula *Campo, int lin, int col, int tamanho)
     }
 }
 
-//Repeticao do loop para jogar
+//Repeticao do loop para jogar, iniciando e alterando as variaveis pertinentes
 void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
 {
     int lin, col;
@@ -347,7 +351,7 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
             {
                 if( (Campo + col + lin * tamanho)->Bomba)
                 {
-                    Fim_Jogo(Campo, tamanho, lin, col);
+                    Mostrar_Derrota(Campo, tamanho, lin, col);
                     Gravar_Nome(&Jogador);
                     Gerar_Relatorio(Campo, celulasRestantes, &Jogador);
 
@@ -387,10 +391,9 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
     }
 }
 
-//Inicializacao de algumas variaveis
+//Inicializacao de duas variaveis cruciais e da Configuracao da Dificuldade do Jogo
 void Jogar()
 {
-
     int tamanho;
     int quantidadeBombas;
 
@@ -411,7 +414,7 @@ void Jogar()
 
 }
 
-//Exibe o tutorial do jogo gradualmente de meio segundo
+//Exibe o tutorial do jogo gradualmente
 void Tutorial()
 {
     system("cls");
@@ -432,6 +435,7 @@ void Tutorial()
     getchar();
 }
 
+//Gera uma valor aleatorio entre 0 e o numero maximo passado
 int aleatorio(int max)
 {
     srand(time(NULL));
@@ -439,22 +443,12 @@ int aleatorio(int max)
     return valor;
 }
 
+//Estabelece um visual particular para o menu, puramente estetico, onde havera aparicoes de caracteres aleatorios
+//Do qual, um numero aleatorio sera gerado como indice do vetor caracteres, de modo que ira aparecer no menu aleatoriamente
 void Visual_Menu()
 {
-    /*
-    254 = celula
-    255 =
-    42 = bomba
-    48 = zero
-    49 = um
-    50 = dois
-    51 = tres
-    52 = quatro
-    56 = oito
-    */
+    //254 = celula, 255 =  ,42 = bomba, 48 = zero, 49 = um, 50 = dois, 51 = tres, 52 = quatro, 56 = oito
 
-    //Menu com aparicoes de caracteres aleatorios
-    //Um numero aleatorio sera gerado como indice de caracteres que ira aparecer no menu e ira mudar conforme for executado
     int caracteres[9] = {254, 255, 42, 48, 49, 50, 51, 52, 56};
       printf("|-----------------------------|");
     printf("\n        %c                    %c", caracteres[aleatorio(9)], caracteres[aleatorio(7)]);
@@ -467,7 +461,7 @@ void Visual_Menu()
     printf("\n|Escolha uma opcao: ");
 }
 
-//Menu
+//Mostra o menu principal do Jogo
 void Menu()
 {
     char opcao = '0';
@@ -496,6 +490,7 @@ void Menu()
     }
 }
 
+//Principal
 int main()
 {
     Menu();
