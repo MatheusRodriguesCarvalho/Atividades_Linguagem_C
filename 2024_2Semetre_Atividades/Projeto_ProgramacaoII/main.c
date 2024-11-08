@@ -14,7 +14,6 @@ tpJogador;
 //Limpa o lixo da memoria da variavel do Jogador
 void Limpar_Jogador(tpJogador *j)
 {
-
     for (int i = 0; i < MAX_NOME; i++)
     {
         j->Nome[i] = '\0';
@@ -403,7 +402,7 @@ void Jogar()
 
         Inicializar(Campo, tamanho); // limpar os valores / lixo da memoria
         Posicionar_Bombas(Campo, tamanho, quantidadeBombas); // definir posicoes aleatorias para as bombas em relacao ao tamanho do campo e a quantidade
-        Contar_Bombas(Campo, tamanho); // essa funcao ir� contar quantas bombas as celulas tem ao seu redor
+        Contar_Bombas(Campo, tamanho); // essa funcao ira contar quantas bombas as celulas tem ao seu redor
 
         Game_Loop(&Campo, tamanho, quantidadeBombas);
     }
@@ -435,7 +434,7 @@ void Tutorial()
     getchar();
 }
 
-//Gera uma valor aleatorio entre 0 e o numero maximo passado
+//Ira pegar o valor maximo e gera e retorna um numero aleatorio
 int aleatorio(int max)
 {
     srand(time(NULL));
@@ -461,7 +460,7 @@ void Visual_Menu()
     printf("\n|Escolha uma opcao: ");
 }
 
-//Mostra o menu principal do Jogo
+//Mostra o menu principal do Jogo, loop vai validar o input do usuario e chamar a funcao que chama o menu-=-=-=-
 void Menu()
 {
     char opcao = '0';
