@@ -379,7 +379,15 @@ void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
             {
                 lin = abs(lin);
                 col = abs(col);
-                Bloquear_Celula(Campo, lin, col, tamanho);
+                if (Validacao_Coordena(lin, col, tamanho) )
+                {
+                    Bloquear_Celula(Campo, lin, col, tamanho);
+                }
+                else
+                {
+                    printf("\nCelula invalida.");
+                    getchar();
+                }
             }
             else
             {
