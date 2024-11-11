@@ -1,503 +1,103 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <string.h>
-
-#define MAX_NOME 50
-
-typedef struct{ int Bomba; int Aberto; int aoRedor; int Bloqueado; } tpCelula;
-
-typedef struct{ char Nome[MAX_NOME]; int Pontuacao; int JogadasRealizadas; }
-tpJogador;
 
 
-//Limpa o lixo da memoria da variavel do Jogador
-void Limpar_Jogador(tpJogador *j)
+#define TAMANHO 100
+
+
+void Ler_Arquivo()
 {
-    for (int i = 0; i < MAX_NOME; i++)
-    {
-        j->Nome[i] = '\0';
-    }
-    j->JogadasRealizadas = 0;
-    j->Pontuacao = 0;
-}
+    FILE *arq;
+    char nome[TAMANHO];
+    char buffer[TAMANHO];
 
-//Inicializa e Limpa cada Celula do Campo
-void Inicializar(tpCelula *Campo, int tamanho)
-{
-    for(int linha = 0; linha < tamanho; linha++)
-    {
-        for(int coluna = 0; coluna < tamanho; coluna++)
-        {
-            (Campo + coluna + linha * tamanho)->Bomba = 0;
-            (Campo + coluna + linha * tamanho)->Aberto = 0;
-            (Campo + coluna + linha * tamanho)->aoRedor = 0;
-            (Campo + coluna + linha * tamanho)->Bloqueado = 0;
-        }
-    }
-}
-
-//Solicita ao Jogador que digite seu nome e grava para gerar o relatorio
-void Gravar_Nome(tpJogador *Jogador)
-{
-    printf("\nDigite o seu nome: ");
+    printf("\nDigite o nome do Arquivo (com extensao): ");
     fflush(stdin);
-    fgets(Jogador->Nome, MAX_NOME, stdin);
-}
+    gets(nome);
 
-//Pega o Campo e desenha na tela
-void Desenhar_Campo(tpCelula *Campo, int tamanho)
-{
-    //system("cls");
-    printf("\n-   ");
-    for(int i = 0; i<tamanho;i++)
+    arq = fopen(nome, "r");
+
+    if( arq == NULL)
     {
-        if(i >= 10){ printf("%i",i); }
-        else{ printf("%i ",i); }
-    }
-    printf("\n\n");
-
-    for(int linha = 0; linha < tamanho; linha++)
-    {
-        if(linha>=10){printf("%i| ",linha);}
-        else{printf("%i | ",linha);}
-
-        for(int coluna = 0; coluna < tamanho; coluna++)
-        {
-            if ((Campo + coluna + linha * tamanho)->Bloqueado == 1)
-            {
-                printf("# ");
-            }
-            else
-            {
-                if ((Campo + coluna + linha * tamanho)->Aberto == 0)
-                {
-                    printf("%c ", 254);
-                }
-                else
-                {
-                    if((Campo + coluna + linha * tamanho)->Bomba == 1)
-                    {
-                        printf("* ");
-                    }
-                    else
-                    {
-                        printf("%i ", (Campo + coluna + linha * tamanho)->aoRedor);
-                    }
-                }
-            }
-
-        }
-        printf("| %i", linha);
-        printf("\n");
-    }
-}
-
-//Quando perder, a posicao das bombas serao revelados
-void Revela_Bombas(tpCelula *Campo, int tamanho)
-{
-    for(int linha = 0; linha < tamanho; linha++)
-    {
-        for(int coluna = 0; coluna < tamanho; coluna++)
-        {
-            if( (Campo + coluna + linha * tamanho)->Bomba)
-            {
-                (Campo + coluna + linha * tamanho)->Aberto = 1;
-            }
-        }
-    }
-}
-
-//Caso o jogador ganhe
-void Mostrar_Vitoria()
-{
-    printf("\nVoce finalizou o Jogo.\n");
-    printf("        P         \n   ___________    \n  '._==_==_=_.'   \n  .-\:      /-.   \n | (|:. 1   |) |  \n  '-|:.     |-'   \n    \::.    /     \n     '::. .'      \n       ) (        \n     _.' '._      \n     -=---=-      \n                  \n");
-    printf("\nO Campo foi limpo sem nenhuma bomba ter sido acertada.");
-}
-
-//Caso o Jogador perca
-void Mostrar_Derrota(tpCelula *Campo, int tamanho, int lin, int col)
-{
-    system("cls");
-    Revela_Bombas(Campo, tamanho);
-    Desenhar_Campo(Campo, tamanho);
-    printf("\nHavia uma bomba na cordenada %ix%i\n", lin, col);
-    printf("E voce pisou nela. Fim de Jogo\n");
-}
-
-//Gerando o relatorio em arquivo .rlt com as informacoes do Jogador
-void Gerar_Relatorio(tpCelula *Campo, int celulasRestantes, tpJogador *Jogador)
-{
-    int pontuacao = (200 - celulasRestantes) * Jogador->JogadasRealizadas;
-
-    FILE *relatorio;
-    relatorio = fopen("Relatorio.rlt", "ab");
-
-    if(relatorio == NULL)
-    {
-        printf("\nNao foi possivel Gerar o Relatorio!");
+        printf("\nNao foi possivel criar o arquivo.");
     }
     else
     {
-        fprintf(relatorio, "\nJogador: ");
-        fwrite(Jogador->Nome, MAX_NOME, 1, relatorio);
-        fprintf(relatorio, "\nJogadas Realizadas:  ");
-        fprintf(relatorio, "%i \n", Jogador->JogadasRealizadas);
-        fprintf(relatorio, "\nPontuacao:  ");
-        fprintf(relatorio, "%i \n", pontuacao);
-        fprintf(relatorio, "\nCampo: ");
-        fwrite(Campo, sizeof(tpCelula), 1, relatorio);
+        printf("\nLendo Arquivo %s", nome);
 
-        fclose(relatorio);
-    }
 
-}
-
-//Valida as coordenadas em relacao ao tamanho do campo estabelacido
-int Validacao_Coordena(int linha, int coluna, int tamanho)
-{
-    return (linha >= 0 && linha < tamanho && coluna >= 0 && coluna < tamanho);
-}
-
-//Calcula a quantidade de Bombas ao redor da Celula
-int Bombas_Proximas(tpCelula *Campo, int linha, int coluna, int tamanho)
-{
-    int quantidade = 0;
-    for(int i = -1; i <= 1; i++)
-    {
-        for(int j = -1; j <= 1; j++)
+        while( EOF() )
         {
-            if(Validacao_Coordena(linha + i, coluna + j, tamanho) && (Campo + (coluna + j) + (linha + i) * tamanho)->Bomba)
-            {
-                quantidade++;
-            }
-        }
-    }
-    return quantidade;
-}
-
-//Atribui a quantidade de bombas ao redor de uma determinada celula, de todas as celulas do campo
-void Contar_Bombas(tpCelula *Campo, int tamanho)
-{
-    for(int linha = 0; linha < tamanho; linha++)
-    {
-        for(int coluna = 0; coluna < tamanho; coluna++)
-        {
-            (Campo + coluna + linha * tamanho)->aoRedor = Bombas_Proximas(Campo, linha, coluna, tamanho);
-        }
-    }
-}
-
-//Posiciona as bombas em celulas aleatorias, se repitir uma posicao, ele retorna para nao sobrescrever
-void Posicionar_Bombas(tpCelula *Campo, int tamanho, int quantidadeBombas)
-{
-    srand(time(NULL));
-    for(int i = 1; i <= quantidadeBombas; i++)
-    {
-        int linha = rand() % tamanho;
-        int coluna = rand() % tamanho;
-        if((Campo + coluna + linha * tamanho)->Bomba == 0)
-        {
-            (Campo + coluna + linha * tamanho)->Bomba = 1;
-        }
-        else
-            i--;
-    }
-}
-
-//Define a Dificuldade do Jogo
-int Configurar_Campo(int * tamanho, int * quantidadeBombas)
-{
-    char dificuldade;
-
-    printf("\nSelecionar a Dificuldade...");
-    do
-    {
-        printf("\nA - Facil (10x10, 20 Bombas)");
-        printf("\nB - Medio (12x12, 30 Bombas)");
-        printf("\nC - Dificil (15x15, 40 Bombas)");
-        printf("\n0 - Voltar");
-        printf("\nDigite sua Escolha:");
-        fflush(stdin);
-        scanf("%c", &dificuldade);
-        fflush(stdin);
-        dificuldade = toupper(dificuldade);
-        system("cls");
-
-        switch (dificuldade)
-        {
-        case 'A':
-            *tamanho = 10;
-            *quantidadeBombas = 20;
-            break;
-        case 'B':
-            *tamanho  = 12;
-            *quantidadeBombas = 30;
-            break;
-        case 'C':
-            *tamanho  = 15;
-            *quantidadeBombas = 40;
-            break;
-        case '0':
-            printf("\nSaindo...\n");
-            return 0;
-            break;
 
         }
+
+        fclose(arq);
     }
-    while (dificuldade != 'A' && dificuldade != 'B' && dificuldade != 'C' && dificuldade != '0');
-    return 1;
+
+
 }
 
-//Funcao com a possibilidade de Recursividade para percorrer todas as celulas passiveis de abertura
-void Abrir_Zeros(tpCelula *Campo, int lin, int col, int tamanho)
+void Criar_Arquivo()
 {
-    int vizinho = 1;
-    int aberto = 0;
-    for(int i = -1; i <= 1; i++)
-    {
-        for(int j = -1; j <= 1; j++)
-        {
-            int nova_linha = (lin + i);
-            int nova_coluna = (col + j);
+    FILE *arq;
 
-            vizinho = (Campo + col + lin * tamanho)->aoRedor;
-            aberto = (Campo + nova_coluna + nova_linha * tamanho)->Aberto;
-            if( (Validacao_Coordena(nova_linha, nova_coluna, tamanho)) && vizinho == 0 && aberto == 0)
-            {
-                (Campo + nova_coluna + (nova_linha * tamanho) )->Aberto = 1;
-                Abrir_Zeros(Campo, nova_linha, nova_coluna, tamanho);
-            }
-        }
-    }
-}
+    arq = fopen("arquivo_teste.txt", "w");
 
-//Conta Quantas Celulas estão abertas
-int Contar_Restantes(tpCelula *Campo, int tamanho)
-{
-    int valor = 0;
-    for(int i = 0; i < tamanho; i++)
+    if( arq == NULL )
     {
-        for(int j = 0; j < tamanho; j++)
-        {
-            if( (Campo + j + i * tamanho)->Bomba == 0 && (Campo + j + i * tamanho)->Aberto == 0)
-            {
-                valor++;
-            }
-        }
-    }
-    return valor;
-}
-
-//Bloqueia a celula se estiver Desbloqueada, e Desbloquea se estiver desbloqueada
-void Bloquear_Celula(tpCelula *Campo, int lin, int col, int tamanho)
-{
-    if ( (Campo + col + lin * tamanho)->Bloqueado)
-    {
-        (Campo + col + lin * tamanho)->Bloqueado = 0;
+        printf("\nNao foi possivel criar o arquivo.");
     }
     else
     {
-        (Campo + col + lin * tamanho)->Bloqueado = 1;
-    }
-}
-
-//Repeticao do loop para jogar, iniciando e alterando as variaveis pertinentes
-void Game_Loop(tpCelula *Campo, int tamanho, int quantidadeBombas)
-{
-    int lin, col;
-    int continuar = 1;
-    int celulasRestantes = tamanho * tamanho - quantidadeBombas;
-    tpJogador Jogador;
-    Limpar_Jogador(&Jogador);
-
-    while(continuar)
-    {
-        system("cls");
-        Desenhar_Campo(Campo, tamanho);
-        celulasRestantes = Contar_Restantes(Campo, tamanho);
-
-        printf("\nHa %i espacos sem Bombas.", celulasRestantes);
-        printf("\n[Use valores Positivos] para {Escolher} uma Celula.");
-        printf("\n[Use valores Negativos] para {Bloquear} ou {Desbloquear} uma Celula.");
-        printf("\nDigite a linha:");
-        fflush(stdin);
-        scanf("%i", &lin);
-        printf("Digite a Coluna:");
-        fflush(stdin);
-        scanf("%i", &col);
-        fflush(stdin);
-
-        //Verificar
-        if (celulasRestantes <= 0) //Vitoria
-        {
-            Mostrar_Vitoria();
-            Gravar_Nome(&Jogador);
-            Gerar_Relatorio(Campo, celulasRestantes, &Jogador);
-            continuar = 0;
-            system("cls");
-        }
-        else if( Validacao_Coordena(lin, col, tamanho) ) //se a coordenada for valida
-        {
-            Jogador.JogadasRealizadas++;
-            if( (Campo + col + lin * tamanho)->Bloqueado )
-            {
-                printf("\nCelula bloqueada");
-                getchar();
-            }
-            else
-            {
-                if( (Campo + col + lin * tamanho)->Bomba)
-                {
-                    Mostrar_Derrota(Campo, tamanho, lin, col);
-                    Gravar_Nome(&Jogador);
-                    Gerar_Relatorio(Campo, celulasRestantes, &Jogador);
-
-                    continuar = 0;
-                    system("cls");
-                }
-                else
-                {
-                    if( (Campo + col + lin * tamanho)->Aberto)
-                    {
-                        printf("\nCoordenada ja foi escolhida!");
-                        printf("\nInforme outra coordenada.(%ix%i)\n", lin, col);
-                        getchar();
-                    }
-                    else
-                    {
-                        (Campo + col + lin * tamanho)->Aberto = 1;
-                        Abrir_Zeros(Campo, lin, col, tamanho);
-                    }
-                }
-            }
-        }
-        else // se a coordenada nao for valida
-        {
-            if(col < 0 || lin < 0)
-            {
-                lin = abs(lin);
-                col = abs(col);
-                if (Validacao_Coordena(lin, col, tamanho) )
-                {
-                    Bloquear_Celula(Campo, lin, col, tamanho);
-                }
-                else
-                {
-                    printf("\nCelula invalida.");
-                    getchar();
-                }
-            }
-            else
-            {
-                printf("Coordenada informada eh invalida!");
-                getchar();
-            }
-        }
-    }
-}
-
-//Inicializacao de duas variaveis cruciais e da Configuracao da Dificuldade do Jogo
-void Jogar()
-{
-    int tamanho;
-    int quantidadeBombas;
-
-    if (Configurar_Campo(&tamanho, &quantidadeBombas)) //Funcao para configurar o tamanho e quantidade de bombas
-    {
-        tpCelula Campo[tamanho][tamanho]; //declara o campo minado com o tamanho configurado
-
-        Inicializar(Campo, tamanho); // limpar os valores / lixo da memoria
-        Posicionar_Bombas(Campo, tamanho, quantidadeBombas); // definir posicoes aleatorias para as bombas em relacao ao tamanho do campo e a quantidade
-        Contar_Bombas(Campo, tamanho); // essa funcao ira contar quantas bombas as celulas tem ao seu redor
-
-        Game_Loop(&Campo, tamanho, quantidadeBombas);
-    }
-    else
-    {
-        system("cls");
+        printf("\nArquivo criado");
+        fclose(arq);
     }
 
 }
 
-//Exibe o tutorial do jogo gradualmente
-void Tutorial()
-{
-    system("cls");
-    printf("\n| Instrucoes do Jogo: \n\n");
-    Sleep(750);
-    printf("|-------------------------------------------------------------------------------------------------|\n");
-    Sleep(750);
-    printf("|                  Havera um determinado Numero de Bombas espalhadas pelo Campo.                  |\n");
-    Sleep(750);
-    printf("|              Seu objetivo eh Selecionar todas as calulas que nao possuiam bomba.                |\n");
-    Sleep(750);
-    printf("|           Voce precisara escolher uma coordenada (linha x coluna) para abrir a celula.          |\n");
-    Sleep(750);
-    printf("|      Os numeros nas celulas abertas indicaram a quantidade de bombas nas celulas ao redor.      |\n");
-    Sleep(750);
-    printf("|-------------------------------------------------------------------------------------------------|\n\n");
-    fflush(stdin);
-    getchar();
-}
 
-//Ira pegar o valor maximo e gera e retorna um numero aleatorio
-int aleatorio(int max)
-{
-    srand(time(NULL));
-    int valor = rand() % max;
-    return valor;
-}
 
-//Estabelece um visual particular para o menu, puramente estetico, onde havera aparicoes de caracteres aleatorios
-//Do qual, um numero aleatorio sera gerado como indice do vetor caracteres, de modo que ira aparecer no menu aleatoriamente
-void Visual_Menu()
-{
-    //254 = celula, 255 =  ,42 = bomba, 48 = zero, 49 = um, 50 = dois, 51 = tres, 52 = quatro, 56 = oito
-
-    int caracteres[9] = {254, 255, 42, 48, 49, 50, 51, 52, 56};
-      printf("|-----------------------------|");
-    printf("\n        %c                    %c", caracteres[aleatorio(9)], caracteres[aleatorio(7)]);
-    printf("\n        CAMPO MINADO %c        ", caracteres[aleatorio(6)]);
-    printf("\n        1. Iniciar Jogo   %c   ", caracteres[aleatorio(5)]);
-    printf("\n   %c    2. Instrucoes         ", caracteres[aleatorio(4)]);
-    printf("\n        3. Sair         %c     ", caracteres[aleatorio(3)]);
-    printf("\n     %c                        ", caracteres[aleatorio(8)]);
-    printf("\n|-----------------------------|");
-    printf("\n|Escolha uma opcao: ");
-}
-
-//Mostra o menu principal do Jogo, loop vai validar o input do usuario e chamar a funcao que chama o menu-=-=-=-
 void Menu()
 {
-    char opcao = '0';
-
-    while (opcao != '3')
+    int opcao = 0;
+    while(opcao != 5)
     {
-        system("cls");
-        Visual_Menu();
+        printf("\n1. Criar Arquivo");
+        printf("\n2. Ler Arquivo");
+        printf("\n3. ");
+        printf("\n4. ");
+        printf("\n5. Sair");
+        printf("\nDigite o numero da opcao: ");
         fflush(stdin);
-        scanf("%c", &opcao);
+        scanf("%i", &opcao);
 
         switch (opcao)
         {
-        case '1':
-            Jogar();
+        case 1:
+            Criar_Arquivo();
             break;
-        case '2':
-            Tutorial();
+        case 2:
+            Ler_Arquivo();
             break;
-        case '3':
-            printf("\nSaindo do jogo. Ate logo!\n");
+        case 3:
+            printf("\nEscrever.");
+            break;
+        case 4:
+            printf("\nConvercao.");
+            break;
+        case 5:
+            printf("\nSair");
+
             break;
         default:
-            printf("Opcao invalida! Tente novamente.\n");
+            printf("a");
+            break;
         }
     }
 }
 
-//Principal
+
+
 int main()
 {
     Menu();
