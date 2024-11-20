@@ -1,17 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 #define TAMANHO 100
-
-/*
-O programa preccisa:
--Criar um arquivo
--Ler um arquivo
--Escrever um arquivo
-- ...
-
-*/
 
 void String_Cleaner(char * s)
 {
@@ -20,7 +10,6 @@ void String_Cleaner(char * s)
         *(s + i) = '\0';
     }
 }
-
 
 void Escrever_Arquivo()
 {
@@ -31,6 +20,9 @@ void Escrever_Arquivo()
     printf("\nDigite o nome do Arquivo (com extensao): ");
     fflush(stdin);
     gets(buffer);
+
+    int posi = strcspn(buffer, "\n");
+    buffer[posi] = '\0';
 
     char escolha = ' ';
     printf("\nDeseja Sobrescrever ou Adicionar o texto ao Arquivo (Digite S ou A)? ");
@@ -96,15 +88,43 @@ void Ler_Arquivo()
     {
         String_Cleaner(buffer);
         fgets(buffer, TAMANHO, arq);
-        printf("%s", buffer);
+        //printf("%s", buffer);
         while ( !feof(arq) )
         {
-            fgets(buffer, TAMANHO, arq);
             printf("%s", buffer);
+            fgets(buffer, TAMANHO, arq);
         }
-
         fclose(arq);
     }
+}
+
+void Renomear_Arquivo()
+{
+    char nomeAntigo[TAMANHO];
+    char novoNome[TAMANHO];
+    char buffer[TAMANHO];
+    String_Cleaner(buffer);
+
+    printf("Digite o nome do Arquivo existente (com extensao): ");
+    fflush(stdin);
+    fgets(nomeAntigo, TAMANHO, stdin);
+    int posi = strcspn(nomeAntigo, "\n");
+    nomeAntigo[posi] = '\0';
+    printf("Digite o novo nome para o arquivo (com extensao): ");
+    fflush(stdin);
+    fgets(novoNome, TAMANHO, stdin);
+    posi = strcspn(novoNome, "\n");
+    novoNome[posi] = '\0';
+
+    if (rename(nomeAntigo, novoNome) == 0)
+    {
+        printf("Arquivo renomeado com sucesso de: '%s' para '%s'.\n", nomeAntigo, novoNome);
+    }
+    else
+    {
+        perror("Nao foi possivel renomear o arquivo");
+    }
+
 
 
 }
@@ -119,8 +139,7 @@ void Criar_Arquivo()
     fflush(stdin);
     fgets(buffer, TAMANHO, stdin);
 
-    int posi = strrchr(buffer, '\n');
-
+    int posi = strcspn(buffer, "\n");
     buffer[posi] = '\0';
 
     arq = fopen(buffer, "w");
@@ -148,7 +167,7 @@ void Menu()
         printf("\n1. Criar Novo Arquivo (Sobrescrever)");
         printf("\n2. Ler Arquivo");
         printf("\n3. Escrever no Arquivo");
-        printf("\n4. ");
+        printf("\n4. Renomear Arquivo Existente");
         printf("\n9. Sair");
         printf("\n\nDigite o numero da opcao: ");
         fflush(stdin);
@@ -168,7 +187,7 @@ void Menu()
             Escrever_Arquivo();
             break;
         case 4:
-            printf("4");
+            Renomear_Arquivo();
             break;
         case 5:
             printf("5");
@@ -182,7 +201,6 @@ void Menu()
         }
     }
 }
-
 
 int main()
 {
