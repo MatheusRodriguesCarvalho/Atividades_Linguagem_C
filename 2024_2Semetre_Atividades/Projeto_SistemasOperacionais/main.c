@@ -4,14 +4,14 @@
 
 #define TAMANHO 100
 
-void String_Cleaner(char * buffer)
+void String_Cleaner(char * buffer) //Limpa todo o lixo da String
 {
     for (int i = 0; i < TAMANHO; i++)
     {
         *(buffer + i) = '\0';
     }
 }
-void Get_FileName(char * buffer, int modo)
+void Get_FileName(char * buffer, int modo) //Pergunta e Armazena o nome do arquivo
 {
     //0 - pegar arquivo, 1 - pegar novo arquivo
     switch (modo)
@@ -29,7 +29,7 @@ void Get_FileName(char * buffer, int modo)
     fflush(stdin);
     fgets(buffer, TAMANHO, stdin);
 }
-void FindDelete_Enter(char * buffer)
+void FindDelete_Enter(char * buffer) //Retira o "\n" da string;
 {
     int pos = strcspn(buffer, "\n");
     buffer[pos] = '\0';
@@ -207,6 +207,13 @@ void Copiar_Arquivo()
 
 void Excluir_Arquivo()
 {
+    FILE *arq;
+    char nomeArquivo[TAMANHO];
+
+    String_Cleaner(nomeArquivo);
+    Get_FileName(nomeArquivo);
+    FindDelete_Enter(nomeArquivo);
+
 
 }
 
