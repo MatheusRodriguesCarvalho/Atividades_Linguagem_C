@@ -11,9 +11,9 @@ void String_Cleaner(char * buffer) //Limpa todo o lixo da String
         *(buffer + i) = '\0';
     }
 }
-void Get_FileName(char * buffer, int modo) //Pergunta e Armazena o nome do arquivo
+void Get_Name(char * buffer, int modo) //Pergunta e Armazena o nome do arquivo
 {
-    //0 - pegar arquivo, 1 - pegar novo arquivo
+    //0 - pegar arquivo, 1 - pegar novo arquivo, 2 - refere a exclusao
     switch (modo)
     {
     case 0:
@@ -21,6 +21,9 @@ void Get_FileName(char * buffer, int modo) //Pergunta e Armazena o nome do arqui
         break;
     case 1:
         printf("\nDigite o novo nome do Arquivo (com extensao): ");
+        break;
+    case 2:
+        printf("\nDigite o nome do Arquivo que sera excluido (com extensao): ");
         break;
     default:
         printf("\nNenhuma opcao foi selecionada.");
@@ -34,30 +37,31 @@ void FindDelete_Enter(char * buffer) //Retira o "\n" da string;
     int pos = strcspn(buffer, "\n");
     buffer[pos] = '\0';
 }
-
+void Get_FileName(char * buffer, int modo)
+{
+    String_Cleaner(buffer);
+    Get_Name(buffer, modo);
+    FindDelete_Enter(buffer);
+}
 
 void Criar_Arquivo()
 {
     FILE *arq;
     char nomeArquivo[TAMANHO];
 
-    String_Cleaner(nomeArquivo);
     Get_FileName(nomeArquivo, 0);
-    FindDelete_Enter(nomeArquivo);
-
-    arq = fopen(nomeArquivo, "w");
+    arq = fopen(nomeArquivo, "a");
 
     if( arq == NULL )
     {
-        printf("\nNao foi possivel criar o arquivo.");
-        printf("-- %s --", nomeArquivo);
+        printf("\nNao foi possivel criar o arquivo '%s'", nomeArquivo);
     }
     else
     {
-        printf("\nArquivo criado");
+        printf("\nArquivo '%s' criado", nomeArquivo);
         fclose(arq);
     }
-
+    getchar();
 }
 
 void Ler_Arquivo()
@@ -65,15 +69,12 @@ void Ler_Arquivo()
     FILE *arq;
     char nomeArquivo[TAMANHO];
 
-    String_Cleaner(nomeArquivo);
     Get_FileName(nomeArquivo, 0);
-    FindDelete_Enter(nomeArquivo);
-
     arq = fopen(nomeArquivo, "r");
 
     if( arq == NULL)
     {
-        printf("\nNao foi possivel criar o arquivo.");
+        printf("\nNao foi possivel abrir o arquivo '%s'", nomeArquivo);
     }
     else
     {
@@ -87,6 +88,8 @@ void Ler_Arquivo()
         }
         fclose(arq);
     }
+    printf("\nRetornando...");
+    getchar();
 }
 
 void Escrever_Arquivo()
@@ -94,36 +97,34 @@ void Escrever_Arquivo()
     FILE *arq;
     char nomeArquivo[TAMANHO];
 
-    String_Cleaner(nomeArquivo);
     Get_FileName(nomeArquivo, 0);
-    FindDelete_Enter(nomeArquivo);
-
-    char escolha = ' ';
-    printf("\nDeseja Sobrescrever ou Adicionar o texto ao Arquivo (Digite S ou A)? ");
-    scanf("%c", &escolha);
-    escolha = toupper(escolha);
-    switch (escolha)
-    {
-    case 'S':
-        arq = fopen(nomeArquivo, "w");
-        break;
-    case 'A':
-        arq = fopen(nomeArquivo, "a");
-        break;
-    default:
-        printf("\nOpcao Invalida.");
-        arq = NULL;
-        system("cls");
-        break;
-    }
 
     if ( arq == NULL)
     {
-        printf("\nNao foi possivel abrir o Arquivo.");
+        printf("\nNao foi possivel abrir o Arquivo '%s'", nomeArquivo);
     }
     else
     {
         char texto[TAMANHO];
+        char escolha = ' ';
+
+        printf("\nDeseja Sobrescrever ou Adicionar o texto ao Arquivo (Digite S ou A)? ");
+        scanf("%c", &escolha);
+        escolha = toupper(escolha);
+        switch (escolha)
+        {
+        case 'S':
+            arq = fopen(nomeArquivo, "w");
+            break;
+        case 'A':
+            arq = fopen(nomeArquivo, "a");
+            break;
+        default:
+            printf("\nOpcao Invalida.");
+            arq = NULL;
+            system("cls");
+            break;
+        }
 
         printf("\nEscreva um texto de ate %i caracteres (digite .. para sair): ", TAMANHO);
         fflush(stdin);
@@ -140,6 +141,8 @@ void Escrever_Arquivo()
         }
         fclose(arq);
     }
+    printf("\nRetornando...");
+    getchar();
 }
 
 void Renomear_Arquivo()
@@ -147,130 +150,183 @@ void Renomear_Arquivo()
     char nomeAntigo[TAMANHO];
     char nomeNovo[TAMANHO];
 
-    String_Cleaner(nomeAntigo);
     Get_FileName(nomeAntigo, 0);
-    FindDelete_Enter(nomeAntigo);
-
-    String_Cleaner(nomeNovo);
     Get_FileName(nomeNovo, 1);
-    FindDelete_Enter(nomeNovo);
 
     if (rename(nomeAntigo, nomeNovo) == 0)
     {
-        printf("Arquivo renomeado com sucesso de: '%s' para '%s'.\n", nomeAntigo, nomeNovo);
+        printf("\nArquivo renomeado com sucesso de: '%s' para '%s'.\n", nomeAntigo, nomeNovo);
     }
     else
     {
-        perror("Nao foi possivel renomear o arquivo...");
+        perror("\nNao foi possivel renomear o arquivo...");
     }
+    getchar();
 }
 
 void Copiar_Arquivo()
 {
     FILE *arq;
-    FILE *newArq;
     char nomeOrigem[TAMANHO];
-    char nomeDestino[TAMANHO];
 
-    String_Cleaner(nomeOrigem);
     Get_FileName(nomeOrigem, 0);
-    FindDelete_Enter(nomeOrigem);
-
     arq = fopen(nomeOrigem, "r");
 
-    String_Cleaner(nomeDestino);
-    Get_FileName(nomeDestino, 1);
-    FindDelete_Enter(nomeDestino);
-
-    newArq = fopen(nomeDestino, "w");
-
-    if( arq == NULL && newArq == NULL )
+    if( arq == NULL )
     {
-        printf("\nNao foi possivel copiar o Arquivo.");
+        printf("\nNao foi possivel localizar o Arquivo '%s'", nomeOrigem);
     }
     else
     {
+        FILE *newArq;
+        char nomeDestino[TAMANHO];
+        Get_FileName(nomeDestino, 1);
+        newArq = fopen(nomeDestino, "w");
 
-        char buffer[TAMANHO];
-        String_Cleaner(buffer);
-        fgets(buffer, TAMANHO, arq);
-        while ( !feof(arq) )
+        if ( newArq == NULL)
         {
-            fputs(buffer, newArq);
-            fgets(buffer, TAMANHO, arq);
+            printf("\nNao foi possivel copiar o Arquivo '%s'", nomeDestino);
         }
-
+        else
+        {
+            char buffer[TAMANHO];
+            String_Cleaner(buffer);
+            fgets(buffer, TAMANHO, arq);
+            while ( !feof(arq) )
+            {
+                fputs(buffer, newArq);
+                fgets(buffer, TAMANHO, arq);
+            }
+            fclose(newArq);
+            printf("\nArquivo '%s' Copiado com Sucesso para '%s'", nomeOrigem, nomeDestino);
+        }
         fclose(arq);
-        fclose(newArq);
     }
+    getchar();
 }
 
 void Excluir_Arquivo()
 {
+    char nomeArquivo[TAMANHO];
+    Get_FileName(nomeArquivo, 2);
+
+    if( remove(nomeArquivo) == 0)
+    { printf("\n'%s' foi excluido com Sucesso!", nomeArquivo); }
+    else
+    { printf("\nOcorreu um Erro na exclusao do Arquivo '%s'", nomeArquivo); }
+    getchar();
+}
+
+void Excluir_Linha()
+{
     FILE *arq;
     char nomeArquivo[TAMANHO];
 
-    String_Cleaner(nomeArquivo);
-    Get_FileName(nomeArquivo);
-    FindDelete_Enter(nomeArquivo);
+    Get_FileName(nomeArquivo, 0);
+    arq = fopen(nomeArquivo, "a+");
 
+    if( arq == NULL)
+    {
+        printf("\nNao foi possivel localizar o arquivo '%s'", nomeArquivo);
+    }
+    else
+    {
+        FILE *temp;
+        char tempName[TAMANHO] = "temporary_File_To_Hold_The_Text_4709_1.txt";
+        temp = fopen(tempName, "a+");
+        if( temp == NULL)
+        {
+            printf("\nNao foi possivel criar o arquivo '%s'", tempName);
+        }
+        else
+        {
+            char text[TAMANHO];
+            int linha; int cont = 1;
+            printf("\nQual linha deseja excluir? ");
+            scanf("%i", &linha);
 
+            String_Cleaner(text);
+            fgets(text, TAMANHO, arq);
+            while ( !feof(arq) )
+            {
+                if ( linha != cont)
+                {
+                    fputs(text, temp);
+                    fgets(text, TAMANHO, arq);
+                }
+                else
+                {
+                    fgets(text, TAMANHO, arq);
+                }
+                cont += 1;
+            }
+
+            fclose(temp);
+            fclose(arq);
+            printf("\nLinha %i, do Arquivo '%s' foi Excluida", linha, nomeArquivo);
+
+            remove(nomeArquivo);
+            rename(tempName, nomeArquivo);
+        }
+        fclose(arq);
+    }
+    getchar();
 }
 
-void Converter_Arquivo()
-{
-
-}
 
 void Menu()
 {
-    int opcao = 0;
+    char opcao = '0';
     //char arquivo[TAMANHO];
 
-    while(opcao != 9)
+    while(opcao != '9')
     {
-        printf("\n1. Criar Novo Arquivo (Sobrescrever)");
-        printf("\n2. Ler Arquivo");
-        printf("\n3. Escrever no Arquivo");
-        printf("\n4. Renomear Arquivo");
-        printf("\n5. Copiar Arquivo");
-        printf("\n6. Excluir Arquivo (excluir linha)");
-        printf("\n7. Converter Arquivo");
-        printf("\n9. Sair");
+        system("cls");
+        printf("\n1. %c Criar Novo Arquivo (Sobrescrever)", 245);
+        printf("\n2. %c Leitura de Arquivo", 169);
+        printf("\n3. %c Escrever / Sobrescrever no Arquivo", 175);
+        printf("\n----------------------------------------");
+        printf("\n4. %c Renomear Arquivo", 171);
+        printf("\n5. %c Copiar Arquivo", 184);
+        printf("\n---------------------");
+        printf("\n6. %c Excluir Arquivo", 88);
+        printf("\n7. %c Excluir Linha", 207);
+        printf("\n-----------------");
+        printf("\n9. %c Sair", 254);
         printf("\n\nDigite o numero da opcao: ");
         fflush(stdin);
-        scanf("%i", &opcao);
-
+        scanf("%c", &opcao);
         system("cls");
 
         switch (opcao)
         {
-        case 1:
+        case '1':
             Criar_Arquivo();
             break;
-        case 2:
+        case '2':
             Ler_Arquivo();
             break;
-        case 3:
+        case '3':
             Escrever_Arquivo();
             break;
-        case 4:
+        case '4':
             Renomear_Arquivo();
             break;
-        case 5:
+        case '5':
             Copiar_Arquivo();
             break;
-        case 6:
+        case '6':
             Excluir_Arquivo();
             break;
-        case 7:
-            Converter_Arquivo();
+        case '7':
+            Excluir_Linha();
             break;
-        case 9:
+        case '9':
             printf("\nSaindo.");
             break;
         default:
             printf("\nDigito Invalido!!\n");
+            system("pause");
             break;
         }
     }
