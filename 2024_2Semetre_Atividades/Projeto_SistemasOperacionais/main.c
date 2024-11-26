@@ -95,9 +95,10 @@ void Ler_Arquivo()
 void Escrever_Arquivo()
 {
     FILE *arq;
-    char nomeArquivo[TAMANHO];
+    char nomeArquivo[TAMANHO];;
 
     Get_FileName(nomeArquivo, 0);
+    arq = fopen(nomeArquivo, "w");
 
     if ( arq == NULL)
     {

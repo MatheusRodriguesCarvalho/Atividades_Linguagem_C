@@ -9,6 +9,5 @@ int main()
     {
         printf("Corespondente ASCII do Numero %i: ( %c )\n", x, x);
     }
-
     return 0;
 }
